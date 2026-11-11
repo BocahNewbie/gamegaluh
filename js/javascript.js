@@ -84,22 +84,30 @@ function renderLogs() {
     container.innerHTML = gameState.logs.map(log => `<div class="text-gray-300 border-b border-galuhBorder/40 pb-1">${log}</div>`).join("");
 }
 
+/* ==========================================================================
+   DINAMIS NEWS GENERATOR (DISESUAIKAN DENGAN LOKASI & CUACA HARI INI)
+   ========================================================================== */
+
 function generateNews() {
     const region = gameState.player.location;
     const currentRegionData = REGIONS[region];
     const neighbors = currentRegionData ? currentRegionData.neighbors : [];
+    const currentWeather = gameState.time.weather; // Misal: "Cerah" atau "Hujan"
 
-    const newsPool = [
-        { reg: "Sadhayana", text: "Panen Kapulaga melimpah! Harga kapulaga stabil." },
-        { reg: "Che A Miss", text: "Hasil tangkapan garaman melimpah di pesisir." },
-        { reg: "Bag Berg", text: "Jalur pegunungan dingin, penambangan batu berjalan lancar." },
-        { reg: "Bun She Riie", text: "Lumbung padi desa terisi penuh beras murni." },
-        { reg: "Kerajaan Kota Galuh", isGlobal: true, text: "Pasar Agung Kerajaan mengumumkan pembukaan lowongan menteri baru." },
-        { reg: "Khaa Wall Ee", text: "Peternakan bukit melatih kuda-kuda tangguh baru." }
-    ];
+    // Filter berita yang relevan:
+    // 1. Berita Warta Agung Global (isGlobal)
+    // 2. Berita yang lokasinya sama dengan player ATAU wilayah tetangga
+    // 3. Berita yang sesuai dengan cuaca saat ini ATAU berita tanpa batasan cuaca
+    const relevantNews = NEWS_POOL.filter(n => {
+        const isLocallyRelevant = n.isGlobal || n.reg === region || neighbors.includes(n.reg);
+        const isWeatherMatched = !n.weather || n.weather === currentWeather;
+        return isLocallyRelevant && isWeatherMatched;
+    });
 
-    const visibleNews = newsPool.filter(n => n.isGlobal || n.reg === region || neighbors.includes(n.reg));
-    gameState.news = visibleNews;
+    // Acak (shuffle) dan ambil 5 berita teratas untuk ditampilkan
+    const shuffled = [...relevantNews].sort(() => 0.5 - Math.random());
+    gameState.news = shuffled.slice(0, 5);
+
     renderNews();
 }
 
