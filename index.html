@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="id" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Livin in Galuh - RPG Simulasi Perdagangan & Karir</title>
+
+    <!-- External Libraries -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Custom Style -->
+    <link rel="stylesheet" href="style.css">
+
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        galuhBg: '#131517',
+                        galuhCard: '#1e2226',
+                        galuhCardLight: '#282d33',
+                        galuhAccent: '#8c734b',
+                        galuhAccentHover: '#a3875a',
+                        galuhGold: '#f39c12',
+                        galuhGoldHover: '#d68910',
+                        galuhBorder: '#383e45'
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-galuhBg text-gray-200 font-sans min-h-screen flex flex-col justify-between selection:bg-galuhAccent selection:text-white overflow-x-hidden">
+
+    <!-- TOP PERSISTENT HEADER -->
+    <header class="bg-galuhCard border-b border-galuhBorder sticky top-0 z-40 px-4 py-2 shadow-lg">
+        <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-3 text-sm">
+            
+            <!-- Logo & Location -->
+            <div class="flex items-center space-x-3">
+                <div class="bg-galuhAccent/20 text-galuhGold p-2 rounded-lg border border-galuhAccent/40 flex items-center justify-center">
+                    <i class="fa-solid fa-scroll text-lg"></i>
+                </div>
+                <div>
+                    <h1 class="font-bold text-gray-100 text-base leading-tight">Livin in Galuh</h1>
+                    <p class="text-xs text-gray-400 flex items-center gap-1">
+                        <i class="fa-solid fa-location-dot text-galuhGold"></i>
+                        <span id="header-location" class="font-semibold text-galuhGold">Che A Miss</span>
+                    </p>
+                </div>
+            </div>
+
+            <!-- In-Game Time & Weather -->
+            <div class="flex items-center space-x-4 bg-galuhBg/80 px-3 py-1.5 rounded-lg border border-galuhBorder">
+                <div class="flex items-center space-x-1.5 text-gray-300">
+                    <i class="fa-regular fa-clock text-galuhAccent"></i>
+                    <span id="header-time" class="font-mono font-semibold">06:00</span>
+                    <span id="header-day" class="text-xs bg-galuhCard px-1.5 py-0.5 rounded text-gray-400 border border-galuhBorder">Hari 1</span>
+                </div>
+                <div class="h-4 w-px bg-galuhBorder"></div>
+                <div class="flex items-center space-x-1 text-xs" id="header-weather-box">
+                    <i id="header-weather-icon" class="fa-solid fa-sun text-amber-400"></i>
+                    <span id="header-weather" class="text-gray-300">Cerah</span>
+                </div>
+            </div>
+
+            <!-- Stamina Bar -->
+            <div class="flex items-center space-x-3 min-w-[200px] flex-1 max-w-xs">
+                <i class="fa-solid fa-bolt text-emerald-400 text-xs"></i>
+                <div class="w-full">
+                    <div class="flex justify-between text-xs mb-0.5">
+                        <span class="text-gray-400 font-medium">Stamina</span>
+                        <span id="header-stamina-text" class="font-bold text-emerald-400">100 / 100</span>
+                    </div>
+                    <div class="w-full bg-gray-800 rounded-full h-2 overflow-hidden border border-gray-700">
+                        <div id="header-stamina-bar" class="stamina-bar-fill bg-emerald-500 h-full rounded-full" style="width: 100%"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Currency (Koin Galuh) -->
+            <div class="flex items-center space-x-2 bg-galuhGold/10 border border-galuhGold/30 px-3 py-1.5 rounded-lg relative">
+                <i class="fa-solid fa-coins text-galuhGold"></i>
+                <span id="header-kg" class="font-bold text-galuhGold text-base transition-all duration-300">50</span>
+                <span class="text-xs text-galuhGold/80">KG</span>
+                <div id="coin-float-badge" class="absolute -bottom-6 right-0 font-bold text-xs opacity-0 transition-all duration-500 pointer-events-none px-1.5 py-0.5 rounded shadow"></div>
+            </div>
+
+        </div>
+    </header>
+
+    <!-- MAIN APP CONTAINER -->
+    <div class="max-w-7xl w-full mx-auto flex-1 grid grid-cols-1 md:grid-cols-12 gap-4 p-3 md:p-4">
+
+        <!-- SIDEBAR NAVIGATION -->
+        <aside class="md:col-span-3 bg-galuhCard border border-galuhBorder rounded-xl p-3 flex flex-col justify-between shadow-md h-fit">
+            <div class="space-y-1">
+                <div class="px-3 py-2 text-xs font-semibold text-gray-400 uppercase tracking-wider border-b border-galuhBorder/60 mb-2">
+                    Menu Utama
+                </div>
+                
+                <button onclick="switchTab('profile')" id="nav-profile" class="nav-btn active w-full flex items-center space-x-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors text-galuhGold bg-galuhAccent/15 border border-galuhAccent/30">
+                    <i class="fa-solid fa-user-gear w-5 text-center"></i>
+                    <span>Profil & Skill</span>
+                </button>
+
+                <button onclick="switchTab('map')" id="nav-map" class="nav-btn w-full flex items-center space-x-3 px-3 py-2.5 rounded-lg text-sm font-medium text-gray-300 hover:bg-galuhCardLight hover:text-white transition-colors">
+                    <i class="fa-solid fa-map-marked-alt w-5 text-center text-galuhGold"></i>
+                    <span>Peta Wilayah & Navigasi</span>
+                </button>
+
+                <button onclick="switchTab('jobs')" id="nav-jobs" class="nav-btn w-full flex items-center space-x-3 px-3 py-2.5 rounded-lg text-sm font-medium text-gray-300 hover:bg-galuhCardLight hover:text-white transition-colors">
+                    <i class="fa-solid fa-briefcase w-5 text-center"></i>
+                    <span>Lowongan Kerja</span>
+                </button>
+
+                <button onclick="switchTab('market')" id="nav-market" class="nav-btn w-full flex items-center space-x-3 px-3 py-2.5 rounded-lg text-sm font-medium text-gray-300 hover:bg-galuhCardLight hover:text-white transition-colors">
+                    <i class="fa-solid fa-store w-5 text-center"></i>
+                    <span>Pasar & Perdagangan</span>
+                </button>
+
+                <button onclick="switchTab('inn')" id="nav-inn" class="nav-btn w-full flex items-center space-x-3 px-3 py-2.5 rounded-lg text-sm font-medium text-gray-300 hover:bg-galuhCardLight hover:text-white transition-colors">
+                    <i class="fa-solid fa-bed w-5 text-center"></i>
+                    <span>Kedai & Penginapan</span>
+                </button>
+
+                <button onclick="switchTab('inventory')" id="nav-inventory" class="nav-btn w-full flex items-center space-x-3 px-3 py-2.5 rounded-lg text-sm font-medium text-gray-300 hover:bg-galuhCardLight hover:text-white transition-colors">
+                    <i class="fa-solid fa-box-open w-5 text-center"></i>
+                    <span>Inventori & Logistik</span>
+                </button>
+
+                <button onclick="switchTab('property')" id="nav-property" class="nav-btn w-full flex items-center space-x-3 px-3 py-2.5 rounded-lg text-sm font-medium text-gray-300 hover:bg-galuhCardLight hover:text-white transition-colors">
+                    <i class="fa-solid fa-house-chimney w-5 text-center"></i>
+                    <span>Properti & Gudang</span>
+                </button>
+
+                <button onclick="switchTab('travel')" id="nav-travel" class="nav-btn w-full flex items-center space-x-3 px-3 py-2.5 rounded-lg text-sm font-medium text-gray-300 hover:bg-galuhCardLight hover:text-white transition-colors">
+                    <i class="fa-solid fa-map-location-dot w-5 text-center"></i>
+                    <span>Pos Transit & Bepergian</span>
+                </button>
+
+                <button onclick="switchTab('library')" id="nav-library" class="nav-btn w-full flex items-center space-x-3 px-3 py-2.5 rounded-lg text-sm font-medium text-gray-300 hover:bg-galuhCardLight hover:text-white transition-colors">
+                    <i class="fa-solid fa-book-bookmark w-5 text-center"></i>
+                    <span>Perpustakaan Agung</span>
+                </button>
+            </div>
+
+            <!-- Save State Control Section -->
+            <div class="pt-4 mt-4 border-t border-galuhBorder space-y-2">
+                <div class="px-2 text-xs font-semibold text-gray-400 uppercase tracking-wider mb-1">
+                    Simpan Data
+                </div>
+                <div class="grid grid-cols-2 gap-2">
+                    <button onclick="manualSave()" class="w-full bg-galuhAccent/20 hover:bg-galuhAccent/30 text-galuhGold border border-galuhAccent/40 py-1.5 px-2 rounded-lg text-xs font-medium transition flex items-center justify-center gap-1">
+                        <i class="fa-solid fa-floppy-disk"></i> Simpan
+                    </button>
+                    <button onclick="exportSaveData()" class="w-full bg-gray-800 hover:bg-gray-700 text-gray-300 border border-galuhBorder py-1.5 px-2 rounded-lg text-xs font-medium transition flex items-center justify-center gap-1">
+                        <i class="fa-solid fa-file-export"></i> Ekspor
+                    </button>
+                </div>
+                <div class="grid grid-cols-2 gap-2">
+                    <button onclick="openImportModal()" class="w-full bg-gray-800 hover:bg-gray-700 text-gray-300 border border-galuhBorder py-1.5 px-2 rounded-lg text-xs font-medium transition flex items-center justify-center gap-1">
+                        <i class="fa-solid fa-file-import"></i> Impor
+                    </button>
+                    <button onclick="confirmResetData()" class="w-full bg-red-900/30 hover:bg-red-900/50 text-red-400 border border-red-800/40 py-1.5 px-2 rounded-lg text-xs font-medium transition flex items-center justify-center gap-1">
+                        <i class="fa-solid fa-trash-can"></i> Reset
+                    </button>
+                </div>
+            </div>
+        </aside>
+
+        <!-- CENTER PANEL -->
+        <main class="md:col-span-6 space-y-4">
+            
+            <!-- Region Header Banner -->
+            <div class="bg-galuhCard border border-galuhBorder rounded-xl p-4 relative overflow-hidden shadow-md">
+                <div class="flex justify-between items-start">
+                    <div>
+                        <span id="region-type-badge" class="text-[10px] font-bold uppercase tracking-widest px-2 py-0.5 rounded bg-galuhAccent/20 text-galuhGold border border-galuhAccent/30">Pesisir Utama</span>
+                        <h2 id="region-title" class="text-xl font-bold text-white mt-1">Che A Miss</h2>
+                        <p id="region-desc" class="text-xs text-gray-400 mt-0.5">Muara sungai besar dan pesisir pantai tempat berkumpulnya pedagang pemula.</p>
+                    </div>
+                    <div class="text-right">
+                        <span class="text-xs text-gray-400 block">Kapasitas Saku:</span>
+                        <span id="region-carry-capacity" class="font-bold text-sm text-gray-200">0.0 / 5.0 kg</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Dynamic Tab Contents -->
+            <div id="tab-content" class="bg-galuhCard border border-galuhBorder rounded-xl p-4 shadow-md min-h-[420px]">
+                <!-- Dynamic Content Load -->
+            </div>
+
+        </main>
+
+        <!-- RIGHT PANEL -->
+        <aside class="md:col-span-3 space-y-4">
+            
+            <!-- Kabar Desa -->
+            <div class="bg-galuhCard border border-galuhBorder rounded-xl p-3 shadow-md">
+                <div class="flex items-center justify-between pb-2 border-b border-galuhBorder mb-3">
+                    <h3 class="font-bold text-xs text-gray-200 uppercase tracking-wider flex items-center gap-1.5">
+                        <i class="fa-solid fa-newspaper text-galuhGold"></i> Kabar Desa & Perbatasan
+                    </h3>
+                    <span class="text-[10px] bg-galuhBg px-1.5 py-0.5 rounded text-gray-400 border border-galuhBorder">Tetangga</span>
+                </div>
+                <div id="news-container" class="space-y-2.5 max-h-[220px] overflow-y-auto pr-1 text-xs"></div>
+            </div>
+
+            <!-- Live Activity Log -->
+            <div class="bg-galuhCard border border-galuhBorder rounded-xl p-3 shadow-md">
+                <div class="flex items-center justify-between pb-2 border-b border-galuhBorder mb-3">
+                    <h3 class="font-bold text-xs text-gray-200 uppercase tracking-wider flex items-center gap-1.5">
+                        <i class="fa-solid fa-scroll text-galuhAccent"></i> Log Aktivitas
+                    </h3>
+                    <button onclick="clearActivityLog()" class="text-[10px] text-gray-500 hover:text-gray-300">Clear</button>
+                </div>
+                <div id="log-container" class="space-y-1.5 max-h-[200px] overflow-y-auto text-xs font-mono">
+                    <div class="text-gray-500 italic">Belum ada aktivitas...</div>
+                </div>
+            </div>
+
+        </aside>
+
+    </div>
+
+    <!-- FOOTER -->
+    <footer class="bg-galuhCard border-t border-galuhBorder py-2 px-4 text-center text-xs text-gray-500 mt-4">
+        Livin in Galuh v1.0.0 &bull; Game Simulasi Perdagangan & Karir Kerajaan
+    </footer>
+
+    <!-- MODAL POPUP -->
+    <div id="game-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-galuhCard border border-galuhBorder rounded-xl max-w-md w-full p-5 space-y-4 shadow-2xl">
+            <div class="flex justify-between items-center border-b border-galuhBorder pb-3">
+                <h3 id="modal-title" class="font-bold text-white text-base">Judul Modal</h3>
+                <button onclick="closeModal()" class="text-gray-400 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div id="modal-body" class="text-sm text-gray-300"></div>
+            <div id="modal-footer" class="flex justify-end gap-2 pt-2">
+                <button onclick="closeModal()" class="bg-gray-800 hover:bg-gray-700 text-gray-300 px-4 py-2 rounded-lg text-xs font-medium">Tutup</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modular Script Imports (Harus berurutan sesuai dependency) -->
+    <script src="js/asset.js"></script>
+    <script src="js/peta.js"></script>
+    <script src="js/harga.js"></script>
+    <script src="js/javascript.js"></script>
+</body>
+</html>
