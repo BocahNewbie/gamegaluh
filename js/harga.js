@@ -1,31 +1,52 @@
 /* ==========================================================================
-   MARKET & PRICING MECHANICS LOGIC
+   MARKET & PRICING SYSTEM LOGIC (54 ITEMS SUPPORT)
    ========================================================================== */
 
 function getCalculatedPrice(itemId, currentRegion) {
     const item = ITEMS[itemId];
     if (!item) return 0;
-    const isOrigin = item.origin === currentRegion;
-    return isOrigin ? item.basePrice : Math.round(item.basePrice * 1.3);
+
+    // Jika dibeli langsung di daerah asal produk, gunakan harga dasar
+    if (item.origin === currentRegion) {
+        return item.basePrice;
+    }
+
+    const originRegionData = REGIONS[item.origin];
+    
+    // Jika wilayah saat ini adalah tetangga langsung dari daerah asal, naik 35%
+    if (originRegionData && originRegionData.neighbors.includes(currentRegion)) {
+        return Math.round(item.basePrice * 1.35);
+    }
+
+    // Jika wilayah jauh (lintas beberapa wilayah), naik 75% - 90% (Keuntungan Jual Jauh)
+    return Math.round(item.basePrice * 1.85);
 }
 
 function renderMarketTab(container) {
     const curReg = gameState.player.location;
-    let itemsHtml = Object.keys(ITEMS).map(itemId => {
+    
+    let localItemsHtml = '';
+    let importItemsHtml = '';
+
+    Object.keys(ITEMS).forEach(itemId => {
         const item = ITEMS[itemId];
         const price = getCalculatedPrice(itemId, curReg);
+        const isOrigin = item.origin === curReg;
         const pItem = gameState.inventory.pocket.find(i => i.id === itemId);
         const holdQty = pItem ? pItem.qty : 0;
 
-        return `
-            <div class="bg-galuhBg p-3 rounded-lg border border-galuhBorder flex items-center justify-between gap-3 text-xs">
+        const cardContent = `
+            <div class="bg-galuhBg p-3 rounded-lg border ${isOrigin ? 'border-galuhAccent/60 bg-galuhAccent/5' : 'border-galuhBorder'} flex items-center justify-between gap-3 text-xs">
                 <div>
-                    <div class="font-bold text-gray-200 text-sm">${item.name}</div>
-                    <div class="text-gray-400 text-[11px]">Berat: ${item.weight} kg | Asal: ${item.origin}</div>
+                    <div class="font-bold text-gray-200 text-sm flex items-center gap-1.5">
+                        ${item.name}
+                        ${isOrigin ? `<span class="bg-galuhGold/20 text-galuhGold text-[9px] px-1.5 py-0.2 rounded border border-galuhGold/40 font-semibold">Produksi Lokal</span>` : ''}
+                    </div>
+                    <div class="text-gray-400 text-[11px]">Berat: ${item.weight} kg | Asal: <span class="text-gray-300 font-medium">${item.origin}</span></div>
                     <div class="text-gray-400 text-[11px]">Dimiliki: <span class="text-galuhGold font-bold">${holdQty} unit</span></div>
                 </div>
                 <div class="text-right space-y-1.5">
-                    <div class="font-bold text-galuhGold text-sm">${price} KG / unit</div>
+                    <div class="font-bold text-galuhGold text-sm">${price.toLocaleString()} KG</div>
                     <div class="flex gap-1 justify-end">
                         <button onclick="buyItem('${itemId}', ${price})" class="bg-emerald-900/60 hover:bg-emerald-800 text-emerald-300 border border-emerald-700 px-2.5 py-1 rounded font-bold text-xs transition">Beli</button>
                         <button onclick="sellItem('${itemId}', ${price})" class="bg-amber-900/60 hover:bg-amber-800 text-amber-300 border border-amber-700 px-2.5 py-1 rounded font-bold text-xs transition">Jual</button>
@@ -33,16 +54,36 @@ function renderMarketTab(container) {
                 </div>
             </div>
         `;
-    }).join("");
+
+        if (isOrigin) localItemsHtml += cardContent;
+        else importItemsHtml += cardContent;
+    });
 
     container.innerHTML = `
         <div class="space-y-4">
             <div class="border-b border-galuhBorder pb-2">
-                <h3 class="font-bold text-sm text-gray-200"><i class="fa-solid fa-store text-galuhGold mr-1"></i> Pasar & Perdagangan Komoditas</h3>
-                <p class="text-xs text-gray-400">Kulakan barang dari daerah asal dan jual ke wilayah tujuan untuk meraup untung Koin Galuh.</p>
+                <h3 class="font-bold text-sm text-gray-200"><i class="fa-solid fa-store text-galuhGold mr-1"></i> Pasar Komoditas Wilayah ${curReg}</h3>
+                <p class="text-xs text-gray-400">Total 54 komoditas unik tersebar di 9 wilayah. Kulakan produk lokal murah dan jual ke wilayah jauh untuk margin profit tinggi!</p>
             </div>
-            <div class="grid grid-cols-1 gap-2.5">
-                ${itemsHtml}
+
+            <!-- Komoditas Asli Lokal (6 Produk) -->
+            <div class="space-y-2">
+                <h4 class="font-bold text-xs text-galuhGold uppercase tracking-wider flex items-center gap-1">
+                    <i class="fa-solid fa-boxes-packing"></i> 6 Produk Khas Asli ${curReg} (Kulakan Termurah)
+                </h4>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                    ${localItemsHtml}
+                </div>
+            </div>
+
+            <!-- Komoditas Impor Wilayah Lain -->
+            <div class="space-y-2 pt-2">
+                <h4 class="font-bold text-xs text-gray-400 uppercase tracking-wider flex items-center gap-1">
+                    <i class="fa-solid fa-truck-ramp-box"></i> Komoditas Impor Dari Wilayah Lain
+                </h4>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 max-h-[380px] overflow-y-auto pr-1">
+                    ${importItemsHtml}
+                </div>
             </div>
         </div>
     `;
@@ -56,7 +97,7 @@ function buyItem(itemId, price) {
     const itemData = ITEMS[itemId];
     const curWeight = getInventoryWeight(gameState.inventory.pocket);
     if (curWeight + itemData.weight > getPocketCapacity()) {
-        showAlertModal("Saku Penuh", "Kapasitas saku Anda tidak cukup untuk membawa barang ini!");
+        showAlertModal("Saku Penuh", "Kapasitas saku/tas Anda tidak cukup untuk membawa komoditas ini!");
         return;
     }
 
