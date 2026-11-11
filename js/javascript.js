@@ -94,17 +94,12 @@ function generateNews() {
     const neighbors = currentRegionData ? currentRegionData.neighbors : [];
     const currentWeather = gameState.time.weather; // Misal: "Cerah" atau "Hujan"
 
-    // Filter berita yang relevan:
-    // 1. Berita Warta Agung Global (isGlobal)
-    // 2. Berita yang lokasinya sama dengan player ATAU wilayah tetangga
-    // 3. Berita yang sesuai dengan cuaca saat ini ATAU berita tanpa batasan cuaca
     const relevantNews = NEWS_POOL.filter(n => {
         const isLocallyRelevant = n.isGlobal || n.reg === region || neighbors.includes(n.reg);
         const isWeatherMatched = !n.weather || n.weather === currentWeather;
         return isLocallyRelevant && isWeatherMatched;
     });
 
-    // Acak (shuffle) dan ambil 5 berita teratas untuk ditampilkan
     const shuffled = [...relevantNews].sort(() => 0.5 - Math.random());
     gameState.news = shuffled.slice(0, 5);
 
@@ -548,7 +543,7 @@ function renderTabContent() {
                         <div class="font-bold text-gray-100 text-sm">${nKey}</div>
                         <div class="text-gray-400 text-[11px]">${REGIONS[nKey].type}</div>
                     </div>
-                    <button onclick="travelTo('${nKey}')" class="bg-galuhAccent hover:bg-galuhAccentHover text-white px-4 py-2 rounded-lg font-bold text-xs transition">
+                    <button onclick="travelTo('${nKey}')" class="bg-galuhAccent hover:bg-galuhAccentHover text-white px-4 py-2 rounded-lg font-bold text-xs transition shadow">
                         Berjalan Kesana (-15 Stamina)
                     </button>
                 </div>
@@ -559,6 +554,7 @@ function renderTabContent() {
             <div class="space-y-4">
                 <div class="border-b border-galuhBorder pb-2">
                     <h3 class="font-bold text-sm text-gray-200"><i class="fa-solid fa-map-location-dot text-galuhGold mr-1"></i> Pos Transit & Bepergian</h3>
+                    <p class="text-xs text-gray-400">Pilih jalur wilayah tetangga terhubung untuk memulai perjalanan kargo.</p>
                 </div>
                 <div class="space-y-2">
                     <h4 class="font-bold text-xs text-gray-300 uppercase tracking-wider">Wilayah Tetangga Langsung</h4>
@@ -611,6 +607,23 @@ function showAlertModal(title, msg) {
 
 function closeModal() {
     document.getElementById("game-modal").classList.add("hidden");
+}
+
+/* FUNGSI TRAVEL / PERPINDAHAN LOKASI */
+function travelTo(destRegion) {
+    if (gameState.player.stamina < 15) {
+        showAlertModal("Stamina Rendah", "Anda terlalu lelah untuk melakukan perjalanan (Butuh min 15 stamina)! Silakan istirahat terlebih dahulu.");
+        return;
+    }
+
+    updateStaminaBar(gameState.player.stamina - 15);
+    gameState.player.location = destRegion;
+    advanceTime(180); // Memakan waktu 3 jam perjalanan
+
+    generateNews();
+    addLog(`Berjalan menuju wilayah <span class="text-galuhGold font-bold">${destRegion}</span>.`);
+    autoSave();
+    renderTabContent();
 }
 
 function doWork(jobIdx) {
