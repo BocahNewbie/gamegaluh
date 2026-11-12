@@ -181,23 +181,24 @@ function updateStaminaBar(newStamina) {
 }
 
 function updateHeaderUI() {
-document.getElementById("header-location").innerText = gameState.player.location;
-document.getElementById("header-time").innerText = ${String(gameState.time.hour).padStart(2,'0')}:${String(gameState.time.minute).padStart(2,'0')};
-document.getElementById("header-day").innerText = Hari ${gameState.time.day};
-document.getElementById("header-kg").innerText = gameState.player.kg.toLocaleString();
-document.getElementById("header-weather").innerText = gameState.time.weather;
-
-updateStaminaBar(gameState.player.stamina);
-
-const regData = REGIONS[gameState.player.location];
-if (regData) {
-    document.getElementById("region-title").innerText = regData.name;
-    document.getElementById("region-type-badge").innerText = regData.type;
-    document.getElementById("region-desc").innerText = regData.desc;
+    document.getElementById("header-location").innerText = gameState.player.location;
+    document.getElementById("header-time").innerText = `${String(gameState.time.hour).padStart(2,'0')}:${String(gameState.time.minute).padStart(2,'0')}`;
+    document.getElementById("header-day").innerText = `Hari ${gameState.time.day}`;
+    document.getElementById("header-kg").innerText = gameState.player.kg.toLocaleString();
+    document.getElementById("header-weather").innerText = gameState.time.weather;
     
-    const curW = getInventoryWeight(gameState.inventory.pocket);
-    const maxW = getPocketCapacity();
-    document.getElementById("region-carry-capacity").innerText = `${curW.toFixed(1)} / ${maxW.toFixed(1)} kg`;
+    updateStaminaBar(gameState.player.stamina);
+
+    const regData = REGIONS[gameState.player.location];
+    if (regData) {
+        document.getElementById("region-title").innerText = regData.name;
+        document.getElementById("region-type-badge").innerText = regData.type;
+        document.getElementById("region-desc").innerText = regData.desc;
+        
+        const curW = getInventoryWeight(gameState.inventory.pocket);
+        const maxW = getPocketCapacity();
+        document.getElementById("region-carry-capacity").innerText = `${curW.toFixed(1)} / ${maxW.toFixed(1)} kg`;
+    }
 }
 
 
