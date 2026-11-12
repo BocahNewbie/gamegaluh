@@ -742,10 +742,10 @@ renderTabContent();
 }
 
 function travelTo(destRegion, staminaCost, travelMinutes) {
-if (gameState.player.stamina < staminaCost) {
-showAlertModal("Stamina Rendah", Anda terlalu lelah untuk berpergian (Butuh ${staminaCost} stamina)!);
-return;
-}
+    if (gameState.player.stamina < staminaCost) {
+        showAlertModal("Stamina Rendah", `Anda terlalu lelah untuk berpergian (Butuh ${staminaCost} stamina)!`);
+        return;
+    }
 
 updateStaminaBar(gameState.player.stamina - staminaCost);
 gameState.player.location = destRegion;
