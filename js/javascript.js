@@ -868,11 +868,11 @@ showAlertModal("Koin Tidak Cukup", "Koin Galuh Anda tidak cukup!");
 return;
 }
 gameState.player.kg -= price;
-animateCoinChange(-price);
-gameState.properties.houses[regName] = { warehouseLevel: 0 };
-addLog(<span class="text-emerald-400 font-bold">Membeli Rumah Permanen!</span> di ${regName}.);
-autoSave();
-renderTabContent();
+    animateCoinChange(-price);
+    gameState.properties.houses[regName] = { warehouseLevel: 0 };
+    addLog(`<span class="text-emerald-400 font-bold">Membeli Rumah Permanen!</span> di ${regName}.`);
+    autoSave();
+    renderTabContent();
 }
 
 function processStudyBook(bookKey, maxLvl) {
