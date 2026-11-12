@@ -855,11 +855,11 @@ showAlertModal("Koin Tidak Cukup", "Koin Galuh Anda tidak cukup!");
 return;
 }
 gameState.player.kg -= cost;
-animateCoinChange(-cost);
-updateStaminaBar(gameState.player.stamina + (staminaAdd * 10));
-addLog(Memesan hidangan kedai khas (-${cost} KG, +${staminaAdd * 10} Stamina).);
-autoSave();
-renderTabContent();
+    animateCoinChange(-cost);
+    updateStaminaBar(gameState.player.stamina + (staminaAdd * 10));
+    addLog(`Memesan hidangan kedai khas (-${cost} KG, +${staminaAdd * 10} Stamina).`);
+    autoSave();
+    renderTabContent();
 }
 
 function buyHouse(regName, price) {
