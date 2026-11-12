@@ -954,9 +954,12 @@ console.error("Load save data failed:", e);
 }
 
 function exportSaveData() {
-const jsonStr = JSON.stringify(gameState);
-const b64 = btoa(jsonStr);
-showAlertModal("Ekspor Save Data", <p class="text-xs text-gray-400 mb-2">Salin kode di bawah ini untuk mem-backup simpanan Anda:</p> <textarea class="w-full h-24 bg-galuhBg border border-galuhBorder text-xs text-gray-300 p-2 rounded font-mono select-all">${b64}</textarea>);
+    const jsonStr = JSON.stringify(gameState);
+    const b64 = btoa(jsonStr);
+    showAlertModal("Ekspor Save Data", `
+        <p class="text-xs text-gray-400 mb-2">Salin kode di bawah ini untuk mem-backup simpanan Anda:</p>
+        <textarea class="w-full h-24 bg-galuhBg border border-galuhBorder text-xs text-gray-300 p-2 rounded font-mono select-all">${b64}</textarea>
+    `);
 }
 
 function openImportModal() {
