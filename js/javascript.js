@@ -177,9 +177,6 @@ function updateStaminaBar(newStamina) {
     }
 }
 
-
-}
-
 function updateHeaderUI() {
     document.getElementById("header-location").innerText = gameState.player.location;
     document.getElementById("header-time").innerText = `${String(gameState.time.hour).padStart(2,'0')}:${String(gameState.time.minute).padStart(2,'0')}`;
@@ -200,7 +197,6 @@ function updateHeaderUI() {
         document.getElementById("region-carry-capacity").innerText = `${curW.toFixed(1)} / ${maxW.toFixed(1)} kg`;
     }
 }
-
 
 }
 
