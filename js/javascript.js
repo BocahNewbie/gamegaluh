@@ -83,13 +83,13 @@ function addLog(msg) {
 }
 
 function renderLogs() {
-const container = document.getElementById("log-container");
-if (!container) return;
-if (gameState.logs.length === 0) {
-container.innerHTML = <div class="text-gray-500 italic">Belum ada aktivitas...</div>;
-return;
-}
-container.innerHTML = gameState.logs.map(log => <div class="text-gray-300 border-b border-galuhBorder/40 pb-1">${log}</div>).join("");
+    const container = document.getElementById("log-container");
+    if (!container) return;
+    if (gameState.logs.length === 0) {
+        container.innerHTML = `<div class="text-gray-500 italic">Belum ada aktivitas...</div>`;
+        return;
+    }
+    container.innerHTML = gameState.logs.map(log => `<div class="text-gray-300 border-b border-galuhBorder/40 pb-1">${log}</div>`).join("");
 }
 
 function generateNews() {
