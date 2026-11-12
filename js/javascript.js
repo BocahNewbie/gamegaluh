@@ -218,10 +218,10 @@ document.querySelectorAll(".nav-btn").forEach(btn => {
 btn.classList.remove("active", "text-galuhGold", "bg-galuhAccent/15", "border", "border-galuhAccent/30");
 btn.classList.add("text-gray-300");
 });
-const activeBtn = document.getElementById(nav-${tabName});
+const activeBtn = document.getElementById(`nav-${tabName}`);
 if (activeBtn) {
-activeBtn.classList.add("active", "text-galuhGold", "bg-galuhAccent/15", "border", "border-galuhAccent/30");
-activeBtn.classList.remove("text-gray-300");
+    activeBtn.classList.add("active", "text-galuhGold", "bg-galuhAccent/15", "border", "border-galuhAccent/30");
+    activeBtn.classList.remove("text-gray-300");
 }
 renderTabContent();
 }
