@@ -75,11 +75,11 @@ return total;
 }
 
 function addLog(msg) {
-const timeStr = ${String(gameState.time.hour).padStart(2,'0')}:${String(gameState.time.minute).padStart(2,'0')};
-const logItem = [H${gameState.time.day} ${timeStr}] ${msg};
-gameState.logs.unshift(logItem);
-if (gameState.logs.length > 30) gameState.logs.pop();
-renderLogs();
+    const timeStr = `${String(gameState.time.hour).padStart(2,'0')}:${String(gameState.time.minute).padStart(2,'0')}`;
+    const logItem = `[H${gameState.time.day} ${timeStr}] ${msg}`;
+    gameState.logs.unshift(logItem);
+    if (gameState.logs.length > 30) gameState.logs.pop();
+    renderLogs();
 }
 
 function renderLogs() {
