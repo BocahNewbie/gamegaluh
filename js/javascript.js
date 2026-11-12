@@ -49,78 +49,6 @@ let gameState = {
 let currentTab = "profile";
 let gameTimer = null;
 
-/* ==========================================================================
-   LIBRARY BOOKS & STUDY COST SYSTEM (Perpustakaan Agung)
-   ========================================================================== */
-const LIBRARY_BOOKS = {
-    "navigasiFisik": {
-        name: "Kitab Navigasi & Geografi Pesisir",
-        targetSkill: "navigasiFisik",
-        desc: "Panduan membaca rasi bintang, peta arus sungai besar, dan jalur pelayaran aman di pesisir."
-    },
-    "pengolahanPangan": {
-        name: "Ensiklopedia Pengolahan & Pengawetan Pangan",
-        targetSkill: "pengolahanPangan",
-        desc: "Metode kuno menggaramkan, mengeringkan, dan memfermentasi hasil bumi dan laut agar tahan lama."
-    },
-    "agrariaPertanian": {
-        name: "Risalah Agraria & Pengairan Sawah",
-        targetSkill: "agrariaPertanian",
-        desc: "Teknik mengatur saluran irigasi tradisional, pemilihan bibit unggul, dan siklus musim panen raya."
-    },
-    "kerajinanKonstruksi": {
-        name: "Panduan Kerajinan & Konstruksi Bambu",
-        targetSkill: "kerajinanKonstruksi",
-        desc: "Ilmu dasar memilih serat kayu, teknik anyaman bambu kokoh, dan struktur bangunan tahan gempa."
-    },
-    "botanikalRempah": {
-        name: "Kompendium Botanikal & Rempah Nusantara",
-        targetSkill: "botanikalRempah",
-        desc: "Katalog lengkap khasiat tanaman obat, cengkeh, kapulaga, dan ramuan herbal penyembuh."
-    },
-    "manajemenMuatan": {
-        name: "Manual Manajemen Logistik & Muatan",
-        targetSkill: "manajemenMuatan",
-        desc: "Strategi penataan gerobak dagang, efisiensi berat kargo, dan kalkulasi rute distribusi pedagang."
-    },
-    "tambangPertukangan": {
-        name: "Teks Pertambangan & Panduan Tempa Besi",
-        targetSkill: "tambangPertukangan",
-        desc: "Teknik dasar membaca urat batu, pemecahan bijih besi mentah, dan panduan dasar menempa baja."
-    },
-    "literasiAdministrasi": {
-        name: "Arsip Administrasi & Literasi Kerajaan",
-        targetSkill: "literasiAdministrasi",
-        desc: "Tata cara pembukuan keuangan niaga, korespondensi resmi istana, dan penyusunan cukai pasar."
-    },
-    "peternakanKulit": {
-        name: "Buku Panduan Peternakan & Pengolahan Kulit",
-        targetSkill: "peternakanKulit",
-        desc: "Metode pemeliharaan ternak sapi/domba, pemerahan susu berkualitas, serta teknik penyamakan kulit."
-    },
-    "berdagang": {
-        name: "Risalah Niaga & Seni Negosiasi Pasar",
-        targetSkill: "berdagang",
-        desc: "Trik membaca fluktuasi harga komoditas antar wilayah, teknik tawar-menawar, dan memperluas jaringan niaga."
-    }
-};
-
-/**
- * Kalkulator biaya belajar perpustakaan:
- * - Base harga ke Level 1: 600 koin / jam
- * - Kelipatan level berikutnya: 1.8x dari harga level sebelumnya
- */
-function calculateStudyCost(currentLevel, hours) {
-    let baseRatePerHour = 600;
-    let totalCost = 0;
-    for (let i = 0; i < hours; i++) {
-        let targetLevel = currentLevel + i;
-        let multiplier = Math.pow(1.8, targetLevel);
-        totalCost += Math.round(baseRatePerHour * multiplier);
-    }
-    return totalCost;
-}
-
 /* UTILITIES & ATURAN KAPASITAS */
 function getPocketCapacity() {
     let base = 5.0; 
@@ -712,7 +640,7 @@ function renderTabContent() {
                 <div class="text-center py-12 space-y-3">
                     <i class="fa-solid fa-lock text-4xl text-gray-600"></i>
                     <h3 class="font-bold text-gray-300">Perpustakaan Agung Tidak Tersedia</h3>
-                    <p class="text-xs text-gray-400 max-w-sm mx-auto">Perpustakaan Agung Kerajaan hanya terdapat di pusat Kerajaan Kota Galuh. Berkelanalah kesana untuk menyewa kitab ilmu!</p>
+                    <p class="text-xs text-gray-400 max-w-sm mx-auto">Perpustakaan Agung Kerajaan hanya terdapat di pusat Kerajaan Kota Galuh. Berkelanalah ke sana untuk menyewa kitab ilmu!</p>
                 </div>
             `;
         } else {
