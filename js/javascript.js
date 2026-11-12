@@ -779,15 +779,28 @@ function restAtInn(withMeal) {
 }
 
 function sleepOnPorch() {
-    if (gameState.time.hour >= 6 && gameState.time.hour < 18) {
-        showAlertModal("Diusir Pemilik Rumah!", "Hari sudah siang! Pemilik rumah mengusir Anda!");
-        advanceTime(120);
+    // Validasi waktu larangan (Pukul 05:00 sampai 20:00)
+    if (gameState.time.hour >= 5 && gameState.time.hour < 20) {
+        showAlertModal("Diusir Pemilik Rumah!", "Hari masih terang (pukul 05:00 - 20:00)! Pemilik rumah mendapati Anda dan mengusir Anda dari teras!");
+        advanceTime(60); // Waktu terbuang 1 jam karena diusir
         return;
     }
 
-    updateStaminaBar(gameState.player.stamina + 30);
-    advanceTime(360);
-    addLog(`Tidur gratis di teras warga (+30 Stamina).`);
+    // Cek biaya tidur di teras (20 KG)
+    const cost = 20;
+    if (gameState.player.kg < cost) {
+        showAlertModal("Tidak Cukup Koin", "Anda tidak memiliki cukup Koin Galuh (butuh 20 KG) untuk membayar sedikit kompensasi tidur di teras warga!");
+        return;
+    }
+
+    // Potong koin, tambah stamina, dan majukan waktu
+    gameState.player.kg -= cost;
+    animateCoinChange(-cost);
+
+    updateStaminaBar(gameState.player.stamina + 15);
+    advanceTime(180); // Tidur selama 3 jam (180 menit)
+
+    addLog(`Tidur di teras warga selama 3 jam (-${cost} KG, +15 Stamina).`);
     autoSave();
     renderTabContent();
 }
