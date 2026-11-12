@@ -245,6 +245,7 @@ const EQUIPMENT = {
     "cart_kuda_2": { name: "Cart Kuda Ganda (100kg)", type: "cart", cap: 100.0, price: 1800000, speedMultiplier: 3.0 }
 };
 
+// Pemetaan Nama Skill (Termasuk Berdagang)
 const SKILL_NAMES = {
     navigasiFisik: "Navigasi & Ketahanan Fisik",
     pengolahanPangan: "Pengolahan Pangan",
@@ -254,7 +255,8 @@ const SKILL_NAMES = {
     manajemenMuatan: "Manajemen Muatan",
     tambangPertukangan: "Tambang & Pertukangan",
     literasiAdministrasi: "Literasi & Administrasi",
-    peternakanKulit: "Peternakan & Olah Kulit"
+    peternakanKulit: "Peternakan & Olah Kulit",
+    berdagang: "Berdagang & Negosiasi"
 };
 
 /* ==========================================================================
