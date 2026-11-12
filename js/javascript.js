@@ -49,6 +49,78 @@ let gameState = {
 let currentTab = "profile";
 let gameTimer = null;
 
+/* ==========================================================================
+   LIBRARY BOOKS & STUDY COST SYSTEM (Perpustakaan Agung)
+   ========================================================================== */
+const LIBRARY_BOOKS = {
+    "navigasiFisik": {
+        name: "Kitab Navigasi & Geografi Pesisir",
+        targetSkill: "navigasiFisik",
+        desc: "Panduan membaca rasi bintang, peta arus sungai besar, dan jalur pelayaran aman di pesisir."
+    },
+    "pengolahanPangan": {
+        name: "Ensiklopedia Pengolahan & Pengawetan Pangan",
+        targetSkill: "pengolahanPangan",
+        desc: "Metode kuno menggaramkan, mengeringkan, dan memfermentasi hasil bumi dan laut agar tahan lama."
+    },
+    "agrariaPertanian": {
+        name: "Risalah Agraria & Pengairan Sawah",
+        targetSkill: "agrariaPertanian",
+        desc: "Teknik mengatur saluran irigasi tradisional, pemilihan bibit unggul, dan siklus musim panen raya."
+    },
+    "kerajinanKonstruksi": {
+        name: "Panduan Kerajinan & Konstruksi Bambu",
+        targetSkill: "kerajinanKonstruksi",
+        desc: "Ilmu dasar memilih serat kayu, teknik anyaman bambu kokoh, dan struktur bangunan tahan gempa."
+    },
+    "botanikalRempah": {
+        name: "Kompendium Botanikal & Rempah Nusantara",
+        targetSkill: "botanikalRempah",
+        desc: "Katalog lengkap khasiat tanaman obat, cengkeh, kapulaga, dan ramuan herbal penyembuh."
+    },
+    "manajemenMuatan": {
+        name: "Manual Manajemen Logistik & Muatan",
+        targetSkill: "manajemenMuatan",
+        desc: "Strategi penataan gerobak dagang, efisiensi berat kargo, dan kalkulasi rute distribusi pedagang."
+    },
+    "tambangPertukangan": {
+        name: "Teks Pertambangan & Panduan Tempa Besi",
+        targetSkill: "tambangPertukangan",
+        desc: "Teknik dasar membaca urat batu, pemecahan bijih besi mentah, dan panduan dasar menempa baja."
+    },
+    "literasiAdministrasi": {
+        name: "Arsip Administrasi & Literasi Kerajaan",
+        targetSkill: "literasiAdministrasi",
+        desc: "Tata cara pembukuan keuangan niaga, korespondensi resmi istana, dan penyusunan cukai pasar."
+    },
+    "peternakanKulit": {
+        name: "Buku Panduan Peternakan & Pengolahan Kulit",
+        targetSkill: "peternakanKulit",
+        desc: "Metode pemeliharaan ternak sapi/domba, pemerahan susu berkualitas, serta teknik penyamakan kulit."
+    },
+    "berdagang": {
+        name: "Risalah Niaga & Seni Negosiasi Pasar",
+        targetSkill: "berdagang",
+        desc: "Trik membaca fluktuasi harga komoditas antar wilayah, teknik tawar-menawar, dan memperluas jaringan niaga."
+    }
+};
+
+/**
+ * Kalkulator biaya belajar perpustakaan:
+ * - Base harga ke Level 1: 600 koin / jam
+ * - Kelipatan level berikutnya: 1.8x dari harga level sebelumnya
+ */
+function calculateStudyCost(currentLevel, hours) {
+    let baseRatePerHour = 600;
+    let totalCost = 0;
+    for (let i = 0; i < hours; i++) {
+        let targetLevel = currentLevel + i;
+        let multiplier = Math.pow(1.8, targetLevel);
+        totalCost += Math.round(baseRatePerHour * multiplier);
+    }
+    return totalCost;
+}
+
 /* UTILITIES & ATURAN KAPASITAS */
 function getPocketCapacity() {
     let base = 5.0; 
@@ -431,7 +503,6 @@ function renderTabContent() {
             </div>
         `;
     } else if (currentTab === "market") {
-        // Cek syarat skill Berdagang minimal Level 2 untuk membuka pasar
         const tradeSkillLvl = gameState.skills.berdagang ? gameState.skills.berdagang.level : 0;
         if (tradeSkillLvl < 2) {
             container.innerHTML = `
@@ -645,23 +716,53 @@ function renderTabContent() {
                 </div>
             `;
         } else {
+            let libraryHtml = Object.keys(LIBRARY_BOOKS).map(bookKey => {
+                const book = LIBRARY_BOOKS[bookKey];
+                const skillObj = gameState.skills[book.targetSkill] || { level: 0, exp: 0 };
+                const currentLevel = skillObj.level;
+                
+                const cost1Hour = calculateStudyCost(currentLevel, 1);
+                const cost3Hours = calculateStudyCost(currentLevel, 3);
+
+                return `
+                    <div class="bg-galuhBg p-3.5 rounded-lg border border-galuhBorder space-y-3 flex flex-col justify-between">
+                        <div>
+                            <div class="flex justify-between items-start">
+                                <h4 class="font-bold text-sm text-gray-100">${book.name}</h4>
+                                <span class="font-bold text-xs text-galuhGold bg-galuhGold/10 px-2 py-0.5 rounded border border-galuhGold/30">Lv. ${currentLevel}</span>
+                            </div>
+                            <p class="text-[11px] text-gray-400 mt-1">${book.desc}</p>
+                            <div class="text-[10px] text-emerald-400 mt-1">
+                                <i class="fa-solid fa-bolt"></i> Gain: 8 - 13 XP per jam
+                            </div>
+                        </div>
+
+                        <div class="space-y-2 pt-2 border-t border-galuhBorder/50">
+                            <div class="flex items-center justify-between text-xs">
+                                <span class="text-gray-400">Durasi Belajar:</span>
+                                <select id="hours-${bookKey}" class="bg-galuhCard border border-galuhBorder text-gray-200 rounded px-2 py-1 text-xs">
+                                    <option value="1">1 Jam (Biaya: ${cost1Hour.toLocaleString()} KG)</option>
+                                    <option value="2">2 Jam</option>
+                                    <option value="3">3 Jam (Biaya: ${cost3Hours.toLocaleString()} KG)</option>
+                                    <option value="5">5 Jam</option>
+                                </select>
+                            </div>
+                            <button onclick="processStudyBook('${bookKey}')" class="w-full bg-galuhAccent hover:bg-galuhAccentHover text-white py-2 rounded-lg font-bold text-xs transition shadow flex items-center justify-center gap-1.5">
+                                <i class="fa-solid fa-book-open-reader"></i> Sewa & Pelajari Kitab
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }).join("");
+
             container.innerHTML = `
                 <div class="space-y-4">
                     <div class="border-b border-galuhBorder pb-2">
                         <h3 class="font-bold text-sm text-gray-200"><i class="fa-solid fa-book-bookmark text-galuhGold mr-1"></i> Perpustakaan Agung Kota Galuh</h3>
-                        <p class="text-xs text-gray-400">Sewa kitab ilmu pengetahuan per jam untuk meningkatkan skill secara signifikan (+8-13 XP/jam).</p>
+                        <p class="text-xs text-gray-400">Sewa kitab ilmu pengetahuan. Biaya dasar Lv.1 adalah 600 KG/jam dan naik 1.8x lipat per level skill.</p>
                     </div>
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
-                        <div class="bg-galuhBg p-3 rounded-lg border border-galuhBorder space-y-2">
-                            <div class="font-bold text-gray-200">Kitab Dasar (Level 1-3)</div>
-                            <div class="text-gray-400">Biaya: 1,200 KG / jam</div>
-                            <button onclick="studyBook('navigasiFisik', 1200, 2)" class="w-full bg-galuhAccent hover:bg-galuhAccentHover text-white py-1.5 rounded font-bold">Belajar 2 Jam (2,400 KG)</button>
-                        </div>
-                        <div class="bg-galuhBg p-3 rounded-lg border border-galuhBorder space-y-2">
-                            <div class="font-bold text-gray-200">Kitab Berdagang & Negosiasi</div>
-                            <div class="text-gray-400">Biaya: 1,500 KG / jam</div>
-                            <button onclick="studyBook('berdagang', 1500, 2)" class="w-full bg-galuhAccent hover:bg-galuhAccentHover text-white py-1.5 rounded font-bold">Belajar Berdagang (3,000 KG)</button>
-                        </div>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        ${libraryHtml}
                     </div>
                 </div>
             `;
@@ -845,30 +946,40 @@ function buyHouse(regName, price) {
     renderTabContent();
 }
 
-function studyBook(skillKey, hourlyCost, durationHours) {
-    const totalCost = hourlyCost * durationHours;
+function processStudyBook(bookKey) {
+    const book = LIBRARY_BOOKS[bookKey];
+    if (!book) return;
+
+    const hoursSelect = document.getElementById(`hours-${bookKey}`);
+    const durationHours = hoursSelect ? parseInt(hoursSelect.value) : 1;
+
+    const skillObj = gameState.skills[book.targetSkill] || { level: 0, exp: 0 };
+    const currentLevel = skillObj.level;
+
+    const totalCost = calculateStudyCost(currentLevel, durationHours);
+
     if (gameState.player.kg < totalCost) {
-        showAlertModal("Koin Tidak Cukup", "Koin Galuh Anda tidak cukup untuk menyewa kitab ini!");
+        showAlertModal("Koin Tidak Cukup", `Koin Galuh Anda tidak cukup! Total biaya untuk ${durationHours} jam adalah ${totalCost.toLocaleString()} KG.`);
         return;
     }
-    if (gameState.player.stamina < 20) {
-        showAlertModal("Stamina Rendah", "Anda terlalu lelah untuk membaca kitab!");
+    if (gameState.player.stamina < (durationHours * 10)) {
+        showAlertModal("Stamina Rendah", "Anda terlalu lelah untuk membaca kitab dalam durasi tersebut!");
         return;
     }
 
     gameState.player.kg -= totalCost;
     animateCoinChange(-totalCost);
-    updateStaminaBar(gameState.player.stamina - 20);
+    updateStaminaBar(gameState.player.stamina - (durationHours * 10));
 
-    let totalExp = 0;
+    let totalExpGained = 0;
     for (let h = 0; h < durationHours; h++) {
-        totalExp += Math.floor(Math.random() * 6) + 8;
+        totalExpGained += Math.floor(Math.random() * 6) + 8; // Random 8 - 13 XP per jam
     }
 
-    addSkillExp(skillKey, totalExp);
+    addSkillExp(book.targetSkill, totalExpGained);
     advanceTime(durationHours * 60);
 
-    addLog(`Membaca Kitab Ilmu <span class="text-gray-200 font-bold">${SKILL_NAMES[skillKey] || skillKey}</span> (-${totalCost} KG, +${totalExp} XP).`);
+    addLog(`Mempelajari <span class="text-gray-200 font-bold">${book.name}</span> selama ${durationHours} jam (-${totalCost.toLocaleString()} KG, +${totalExpGained} XP).`);
     autoSave();
     renderTabContent();
 }
