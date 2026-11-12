@@ -963,7 +963,11 @@ function exportSaveData() {
 }
 
 function openImportModal() {
-showAlertModal("Impor Save Data", <p class="text-xs text-gray-400 mb-2">Tempelkan kode save data Anda di bawah ini:</p> <textarea id="import-text-input" class="w-full h-24 bg-galuhBg border border-galuhBorder text-xs text-gray-300 p-2 rounded font-mono" placeholder="Paste kode save data di sini..."></textarea> <button onclick="processImportData()" class="mt-2 w-full bg-galuhAccent hover:bg-galuhAccentHover text-white py-1.5 rounded font-bold text-xs">Impor & Muat Game</button>);
+    showAlertModal("Impor Save Data", `
+        <p class="text-xs text-gray-400 mb-2">Tempelkan kode save data Anda di bawah ini:</p>
+        <textarea id="import-text-input" class="w-full h-24 bg-galuhBg border border-galuhBorder text-xs text-gray-300 p-2 rounded font-mono" placeholder="Paste kode save data di sini..."></textarea>
+        <button onclick="processImportData()" class="mt-2 w-full bg-galuhAccent hover:bg-galuhAccentHover text-white py-1.5 rounded font-bold text-xs">Impor & Muat Game</button>
+    `);
 }
 
 function processImportData() {
