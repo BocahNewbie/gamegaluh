@@ -1,9 +1,9 @@
 /* ==========================================================================
-   GAME ENGINE MAIN CONTROLLER - LIVIN IN GALUH (UPDATED)
+   GAME ENGINE MAIN CONTROLLER - LIVIN IN GALUH (CLEANED)
    ========================================================================== */
 
 let gameState = {
-    version: "1.3.0",
+    version: "1.3.1",
     lastSaved: Date.now(),
     player: {
         name: "Kang Aa",
@@ -31,7 +31,7 @@ let gameState = {
         tambangPertukangan: { level: 0, exp: 0 },
         literasiAdministrasi: { level: 0, exp: 0 },
         peternakanKulit: { level: 0, exp: 0 },
-        berdagang: { level: 0, exp: 0 } // Skill Berdagang untuk syarat akses pasar
+        berdagang: { level: 0, exp: 0 }
     },
     inventory: {
         pocket: [],
@@ -791,16 +791,15 @@ function restAtInn(withMeal) {
     renderTabContent();
 }
 
-/* FUNGSI TIDUR DI TERAS WARGA (DIPERBARUI) */
+/* FUNGSI TIDUR DI TERAS WARGA */
 function sleepOnPorch() {
-    // Tidak bisa digunakan jika jam menunjukkan pukul 05:00 s.d. 20:00
     if (gameState.time.hour >= 5 && gameState.time.hour < 20) {
         showAlertModal("Diusir Pemilik Rumah!", "Hari masih siang/sore (pukul 05:00 - 20:00)! Pemilik rumah mendapati Anda dan mengusir Anda!");
         advanceTime(60); 
         return;
     }
 
-    const cost = 20; // Biaya tidur 20 KG
+    const cost = 20;
     if (gameState.player.kg < cost) {
         showAlertModal("Tidak Cukup Koin", "Anda butuh 20 KG untuk membayar kompensasi tidur di teras warga!");
         return;
@@ -809,10 +808,9 @@ function sleepOnPorch() {
     gameState.player.kg -= cost;
     animateCoinChange(-cost);
 
-    updateStaminaBar(gameState.player.stamina + 15); // Tambah 15 stamina
-    advanceTime(180); // Tidur selama 3 jam (180 menit)
+    updateStaminaBar(gameState.player.stamina + 15);
+    advanceTime(180);
 
-    // Menambah sedikit XP skill berdagang/bertahan
     addSkillExp("berdagang", 2);
 
     addLog(`Tidur di teras warga selama 3 jam (-20 KG, +15 Stamina).`);
