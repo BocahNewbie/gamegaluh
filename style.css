@@ -1,25 +1,25 @@
 /* Custom scrollbar untuk tema Medieval Wood & Parchment */
 ::-webkit-scrollbar {
-    width: 6px;
-    height: 6px;
+width: 6px;
+height: 6px;
 }
 ::-webkit-scrollbar-track {
-    background: #1c1712;
+background: #1c1712;
 }
 ::-webkit-scrollbar-thumb {
-    background: #4a3b2c;
-    border-radius: 4px;
+background: #4a3b2c;
+border-radius: 4px;
 }
 ::-webkit-scrollbar-thumb:hover {
-    background: #8c6239;
+background: #8c6239;
 }
 
 .stamina-bar-fill {
-    transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 /* Sentuhan efek tekstur / border ala abad pertengahan */
 .medieval-border {
-    border: 2px solid #4a3b2c;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -1px rgba(0, 0, 0, 0.1);
+border: 2px solid #4a3b2c;
+box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -1px rgba(0, 0, 0, 0.1);
 }
