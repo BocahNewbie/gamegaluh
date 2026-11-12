@@ -1,353 +1,380 @@
 /* ==========================================================================
-   ASSET DATA & CONSTANTS
-   ========================================================================== */
+ASSET DATA & CONSTANTS (UPDATED)
+========================================================================== */
 
-// 9 Regions & Connectivity Map
+// 9 Regions & Connectivity Map (Dilengkapi Jarak Antar Wilayah dlm km)
 const REGIONS = {
-    "Che A Miss": {
-        name: "Che A Miss",
-        type: "Pesisir Utama",
-        desc: "Muara sungai besar dan pesisir pantai tempat berkumpulnya pedagang pemula.",
-        neighbors: ["Male Bear", "Bane A Gare"],
-        innCost: 30, innMealCost: 50, housePrice: 750000,
-        jobs: [
-            { title: "Buruh Angkut Ikan & Garam", reqSkill: null, expSkill: "navigasiFisik", pay: 14 },
-            { title: "Pengering & Pengasin Ikan", reqSkill: null, expSkill: "pengolahanPangan", pay: 15 },
-            { title: "Pengawas Gudang Pesisir", reqSkill: { navigasiFisik: 4 }, expSkill: "navigasiFisik", pay: 45 },
-            { title: "Nakhoda Kapal Dagang Pesisir", reqSkill: { navigasiFisik: 6, manajemenMuatan: 5, literasiAdministrasi: 4 }, expSkill: "navigasiFisik", pay: 250 }
-        ]
-    },
-    "Male Bear": {
-        name: "Male Bear",
-        type: "Pesisir Rawa",
-        desc: "Daerah pesisir berbatu dengan akses rawa-rawa liar dan perikanan laut.",
-        neighbors: ["Che A Miss", "Bun She Riie"],
-        innCost: 65, innMealCost: 95, housePrice: 1350000,
-        jobs: [
-            { title: "Pemungut Kerang & Hasil Rawa", reqSkill: null, expSkill: "navigasiFisik", pay: 16 },
-            { title: "Pembersih Perahu Nelayan", reqSkill: null, expSkill: "tambangPertukangan", pay: 17 },
-            { title: "Penyortir Mutu Hasil Laut", reqSkill: { pengolahanPangan: 4 }, expSkill: "pengolahanPangan", pay: 50 },
-            { title: "Pengelola Dermaga Rawa", reqSkill: { navigasiFisik: 6, literasiAdministrasi: 5 }, expSkill: "literasiAdministrasi", pay: 280 }
-        ]
-    },
-    "Bun She Riie": {
-        name: "Bun She Riie",
-        type: "Pesawahan Selatan",
-        desc: "Hamparan sawah yang luas dengan saluran irigasi tradisional.",
-        neighbors: ["Male Bear", "Bho Junk"],
-        innCost: 65, innMealCost: 95, housePrice: 1350000,
-        jobs: [
-            { title: "Buruh Pemungut Gabah", reqSkill: null, expSkill: "agrariaPertanian", pay: 15 },
-            { title: "Pembersih Kandang Unggas", reqSkill: null, expSkill: "peternakanKulit", pay: 16 },
-            { title: "Operator Alat Giling Padi", reqSkill: { agrariaPertanian: 4 }, expSkill: "agrariaPertanian", pay: 52 },
-            { title: "Pengawas Lumbung Desa", reqSkill: { agrariaPertanian: 6, manajemenMuatan: 5, literasiAdministrasi: 4 }, expSkill: "agrariaPertanian", pay: 290 }
-        ]
-    },
-    "Bho Junk": {
-        name: "Bho Junk",
-        type: "Pesawahan Pelosok",
-        desc: "Desa lumbung padi pelindung yang dikelilingi perbukitan hijau.",
-        neighbors: ["Bun She Riie", "Sadhayana"],
-        innCost: 150, innMealCost: 200, housePrice: 2500000,
-        jobs: [
-            { title: "Pencari Serat & Bambu Liar", reqSkill: null, expSkill: "kerajinanKonstruksi", pay: 17 },
-            { title: "Pembuat Telur Asin Desa", reqSkill: null, expSkill: "pengolahanPangan", pay: 18 },
-            { title: "Pengrajin Anyaman Bambu", reqSkill: { kerajinanKonstruksi: 4 }, expSkill: "kerajinanKonstruksi", pay: 65 },
-            { title: "Kepala Desa Pengadaan Pangan", reqSkill: { agrariaPertanian: 6, kerajinanKonstruksi: 5, literasiAdministrasi: 4 }, expSkill: "literasiAdministrasi", pay: 340 }
-        ]
-    },
-    "Sadhayana": {
-        name: "Sadhayana",
-        type: "Lembah Rempah",
-        desc: "Lembah lembap di kaki bukit yang tanahnya sangat subur untuk tanaman obat & rempah.",
-        neighbors: ["Bho Junk", "Kerajaan Kota Galuh"],
-        innCost: 350, innMealCost: 430, housePrice: 4800000,
-        jobs: [
-            { title: "Pemetik Bunga & Rempah Liar", reqSkill: null, expSkill: "botanikalRempah", pay: 20 },
-            { title: "Pencari Madu Hutan", reqSkill: null, expSkill: "navigasiFisik", pay: 22 },
-            { title: "Pengering & Penumbuk Herbal", reqSkill: { botanikalRempah: 4 }, expSkill: "botanikalRempah", pay: 75 },
-            { title: "Asisten Racik Obat Lembah", reqSkill: { botanikalRempah: 7, literasiAdministrasi: 5, pengolahanPangan: 4 }, expSkill: "botanikalRempah", pay: 420 }
-        ]
-    },
-    "Bane A Gare": {
-        name: "Bane A Gare",
-        type: "Pesawahan Perbatasan",
-        desc: "Pasar transit perbatasan antara pesisir dan wilayah pegunungan.",
-        neighbors: ["Che A Miss", "Bag Berg"],
-        innCost: 150, innMealCost: 200, housePrice: 2500000,
-        jobs: [
-            { title: "Buruh Panggul Pasar Perbatasan", reqSkill: null, expSkill: "manajemenMuatan", pay: 18 },
-            { title: "Penjaga Penampungan Ternak", reqSkill: null, expSkill: "peternakanKulit", pay: 18 },
-            { title: "Pengatur Jadwal Rute Cart", reqSkill: { manajemenMuatan: 4 }, expSkill: "manajemenMuatan", pay: 68 },
-            { title: "Mandor Transit Perbatasan", reqSkill: { manajemenMuatan: 6, agrariaPertanian: 5, literasiAdministrasi: 4 }, expSkill: "manajemenMuatan", pay: 360 }
-        ]
-    },
-    "Bag Berg": {
-        name: "Bag Berg",
-        type: "Pegunungan Tambang",
-        desc: "Wilayah berbatu terjal, dingin, tempat para penebang kayu dan penambang batu/besi.",
-        neighbors: ["Bane A Gare", "Khaa Wall Ee"],
-        innCost: 350, innMealCost: 430, housePrice: 4800000,
-        jobs: [
-            { title: "Pemecah Batu Kali & Tambang", reqSkill: null, expSkill: "tambangPertukangan", pay: 22 },
-            { title: "Penebang Kayu Jati Kasar", reqSkill: null, expSkill: "tambangPertukangan", pay: 22 },
-            { title: "Pandai Besi & Tambang", reqSkill: { tambangPertukangan: 4 }, expSkill: "tambangPertukangan", pay: 80 },
-            { title: "Kepala Pengawas Tambang Kerajaan", reqSkill: { tambangPertukangan: 7, manajemenMuatan: 5, navigasiFisik: 4 }, expSkill: "tambangPertukangan", pay: 450 }
-        ]
-    },
-    "Khaa Wall Ee": {
-        name: "Khaa Wall Ee",
-        type: "Bukit Peternakan",
-        desc: "Padang rumput perbukitan yang luas, tempat peternakan sapi/domba milik warga desa.",
-        neighbors: ["Bag Berg", "Kerajaan Kota Galuh"],
-        innCost: 750, innMealCost: 880, housePrice: 8500000,
-        jobs: [
-            { title: "Gembala Sapi & Domba", reqSkill: null, expSkill: "peternakanKulit", pay: 24 },
-            { title: "Pemerah Susu Murni", reqSkill: null, expSkill: "peternakanKulit", pay: 25 },
-            { title: "Pengolah Kulit & Bulu Domba", reqSkill: { peternakanKulit: 4 }, expSkill: "peternakanKulit", pay: 95 },
-            { title: "Penunggang & Pelatih Kuda Cart", reqSkill: { peternakanKulit: 6, manajemenMuatan: 5, navigasiFisik: 5 }, expSkill: "peternakanKulit", pay: 520 }
-        ]
-    },
-    "Kerajaan Kota Galuh": {
-        name: "Kerajaan Kota Galuh",
-        type: "Ibu Kota Kerajaan",
-        desc: "Pusat peradaban, benteng megah, Perpustakaan Agung Kerajaan, dan pusat perdagangan elit.",
-        neighbors: ["Sadhayana", "Khaa Wall Ee"],
-        innCost: 1800, innMealCost: 2100, housePrice: 25000000,
-        jobs: [
-            { title: "Pembersih Pelataran Benteng", reqSkill: null, expSkill: "navigasiFisik", pay: 30 },
-            { title: "Pelayan Kedai Bangsawan", reqSkill: null, expSkill: "literasiAdministrasi", pay: 32 },
-            { title: "Kuli Panggul Gerobak Kerajaan", reqSkill: null, expSkill: "manajemenMuatan", pay: 35 },
-            { title: "Juru Ketik & Pengarsip Perpus", reqSkill: { literasiAdministrasi: 4 }, expSkill: "literasiAdministrasi", pay: 120 },
-            { title: "Penjaga Gudang Bahan Pokok", reqSkill: { manajemenMuatan: 4, agrariaPertanian: 3 }, expSkill: "manajemenMuatan", pay: 130 },
-            { title: "Pengolah Sutra & Busana Istana", reqSkill: { peternakanKulit: 4, kerajinanKonstruksi: 3 }, expSkill: "kerajinanKonstruksi", pay: 140 },
-            { title: "Pengawas Kereta Kuda Utama", reqSkill: { peternakanKulit: 4, navigasiFisik: 3 }, expSkill: "navigasiFisik", pay: 150 },
-            { title: "Penatap Pasar & Cukai Dagang", reqSkill: { literasiAdministrasi: 4, manajemenMuatan: 3 }, expSkill: "literasiAdministrasi", pay: 160 },
-            { title: "Arsitek Irigasi & Benteng", reqSkill: { tambangPertukangan: 6, agrariaPertanian: 4 }, expSkill: "tambangPertukangan", pay: 380 },
-            { title: "Tabib Racik Obat Istana", reqSkill: { botanikalRempah: 6, pengolahanPangan: 5 }, expSkill: "botanikalRempah", pay: 400 },
-            { title: "Nakhoda Armada Kerajaan", reqSkill: { navigasiFisik: 6, manajemenMuatan: 5 }, expSkill: "navigasiFisik", pay: 420 },
-            { title: "Mandor Logistik Agung", reqSkill: { manajemenMuatan: 6, navigasiFisik: 5, literasiAdministrasi: 4 }, expSkill: "manajemenMuatan", pay: 450 },
-            { title: "Juru Tulis Diplomatik Kerajaan", reqSkill: { literasiAdministrasi: 6, navigasiFisik: 4 }, expSkill: "literasiAdministrasi", pay: 480 },
-            { title: "Koki Utama Jamuan Istana", reqSkill: { pengolahanPangan: 6, botanikalRempah: 5 }, expSkill: "pengolahanPangan", pay: 500 },
-            { title: "Menteri Keuangan & Perdagangan", reqSkill: { literasiAdministrasi: 8, manajemenMuatan: 7, navigasiFisik: 6, agrariaPertanian: 5, tambangPertukangan: 5 }, reqExp: 200, expSkill: "literasiAdministrasi", pay: 3500 },
-            { title: "Kepala Logistik & Pasokan Pangan", reqSkill: { manajemenMuatan: 8, navigasiFisik: 7, agrariaPertanian: 7, peternakanKulit: 6, literasiAdministrasi: 5 }, reqExp: 180, expSkill: "manajemenMuatan", pay: 3200 },
-            { title: "Kepala Tabib & Herbalis Agung", reqSkill: { botanikalRempah: 8, pengolahanPangan: 7, literasiAdministrasi: 7, agrariaPertanian: 6 }, reqExp: 150, expSkill: "botanikalRempah", pay: 2900 },
-            { title: "Panglima Pertambangan & Benteng", reqSkill: { tambangPertukangan: 8, manajemenMuatan: 7, navigasiFisik: 6, peternakanKulit: 5 }, reqExp: 160, expSkill: "tambangPertukangan", pay: 3100 }
-        ]
-    }
-};
-
-/* ==========================================================================
-   54 TRADE GOODS ITEMS (6 PRODUK KHAS PER WILAYAH)
-   ========================================================================== */
-
-const ITEMS = {
-    // --------------------------------------------------------------------------
-    // 1. CHE A MISS (Pesisir Utama) - 6 Komoditas
-    // --------------------------------------------------------------------------
-    "garam_kasar": { name: "Garam Kasar Tambak", weight: 0.5, basePrice: 12, origin: "Che A Miss" },
-    "ikan_asin": { name: "Ikan Asin Pengeringan", weight: 0.8, basePrice: 18, origin: "Che A Miss" },
-    "terasi_udang": { name: "Terasi Udang Pesisir", weight: 0.4, basePrice: 22, origin: "Che A Miss" },
-    "kerang_mutiara": { name: "Kerang Mutiara Mentah", weight: 0.3, basePrice: 75, origin: "Che A Miss" },
-    "minyak_ikan": { name: "Minyak Hati Ikan Hiu", weight: 0.7, basePrice: 55, origin: "Che A Miss" },
-    "rumput_laut": { name: "Rumput Laut Kering", weight: 0.6, basePrice: 25, origin: "Che A Miss" },
-
-    // --------------------------------------------------------------------------
-    // 2. MALE BEAR (Pesisir Rawa) - 6 Komoditas
-    // --------------------------------------------------------------------------
-    "ikan_segar": { name: "Ikan Laut Segar", weight: 1.0, basePrice: 25, origin: "Male Bear" },
-    "kerang_hitam": { name: "Kerang Hitam Rawa", weight: 1.2, basePrice: 30, origin: "Male Bear" },
-    "minyak_bakau": { name: "Minyak Rempah Bakau", weight: 0.6, basePrice: 45, origin: "Male Bear" },
-    "kepiting_bakau": { name: "Kepiting Bakau Besar", weight: 1.5, basePrice: 68, origin: "Male Bear" },
-    "lumpur_terapi": { name: "Lumpur Mineral Rawa", weight: 2.0, basePrice: 35, origin: "Male Bear" },
-    "serat_bakau": { name: "Serat Batang Bakau", weight: 1.1, basePrice: 28, origin: "Male Bear" },
-
-    // --------------------------------------------------------------------------
-    // 3. BUN SHE RIIE (Pesawahan Selatan) - 6 Komoditas
-    // --------------------------------------------------------------------------
-    "beras_putih": { name: "Beras Putih Super", weight: 2.0, basePrice: 40, origin: "Bun She Riie" },
-    "gabah_kering": { name: "Gabah Kering Giling", weight: 2.5, basePrice: 28, origin: "Bun She Riie" },
-    "dedak_halus": { name: "Dedak Padi Halus", weight: 1.5, basePrice: 15, origin: "Bun She Riie" },
-    "tepung_beras": { name: "Tepung Beras Putih", weight: 1.8, basePrice: 48, origin: "Bun She Riie" },
-    "bibit_padi": { name: "Karung Bibit Unggul", weight: 3.0, basePrice: 85, origin: "Bun She Riie" },
-    "jerami_kering": { name: "Ikat Jerami Pakan", weight: 1.2, basePrice: 12, origin: "Bun She Riie" },
-
-    // --------------------------------------------------------------------------
-    // 4. BHO JUNK (Pesawahan Pelosok) - 6 Komoditas
-    // --------------------------------------------------------------------------
-    "telur_asin": { name: "Telur Asin Desa", weight: 0.5, basePrice: 20, origin: "Bho Junk" },
-    "anyaman_bambu": { name: "Anyaman Bambu Wadah", weight: 1.5, basePrice: 65, origin: "Bho Junk" },
-    "minyak_kelapa": { name: "Minyak Kelapa Murni", weight: 1.0, basePrice: 50, origin: "Bho Junk" },
-    "keranjang_tampah": { name: "Tampah Bambu Besar", weight: 1.8, basePrice: 58, origin: "Bho Junk" },
-    "gula_kelapa": { name: "Gula Semut Kelapa", weight: 0.9, basePrice: 42, origin: "Bho Junk" },
-    "bibit_bambu": { name: "Tunas Bambu Pilihan", weight: 2.2, basePrice: 33, origin: "Bho Junk" },
-
-    // --------------------------------------------------------------------------
-    // 5. SADHAYANA (Lembah Rempah) - 6 Komoditas
-    // --------------------------------------------------------------------------
-    "cengkeh_kering": { name: "Cengkeh Kering", weight: 0.2, basePrice: 85, origin: "Sadhayana" },
-    "kapulaga": { name: "Kapulaga Lembah", weight: 0.2, basePrice: 90, origin: "Sadhayana" },
-    "madu_hutan": { name: "Madu Hutan Murni", weight: 0.8, basePrice: 120, origin: "Sadhayana" },
-    "kayu_manis": { name: "Batang Kayu Manis", weight: 0.4, basePrice: 70, origin: "Sadhayana" },
-    "ekstrak_ginseng": { name: "Ekstrak Akar Ginseng", weight: 0.3, basePrice: 160, origin: "Sadhayana" },
-    "bunga_herbal": { name: "Bunga Obat Kering", weight: 0.2, basePrice: 65, origin: "Sadhayana" },
-
-    // --------------------------------------------------------------------------
-    // 6. BANE A GARE (Pesawahan Perbatasan) - 6 Komoditas
-    // --------------------------------------------------------------------------
-    "gula_aren": { name: "Gula Aren Cetak", weight: 1.0, basePrice: 38, origin: "Bane A Gare" },
-    "dendeng_sapi": { name: "Dendeng Sapi Transit", weight: 0.7, basePrice: 110, origin: "Bane A Gare" },
-    "tali_tambang": { name: "Tali Tambang Serat", weight: 1.2, basePrice: 42, origin: "Bane A Gare" },
-    "kopi_perbatasan": { name: "Biji Kopi Perbatasan", weight: 0.8, basePrice: 78, origin: "Bane A Gare" },
-    "tembakau_lokal": { name: "Daun Tembakau Kering", weight: 0.5, basePrice: 95, origin: "Bane A Gare" },
-    "minyak_lampu": { name: "Minyak Penerangan", weight: 1.0, basePrice: 45, origin: "Bane A Gare" },
-
-    // --------------------------------------------------------------------------
-    // 7. BAG BERG (Pegunungan Tambang) - 6 Komoditas
-    // --------------------------------------------------------------------------
-    "biji_besi": { name: "Biji Besi Mentah", weight: 5.0, basePrice: 150, origin: "Bag Berg" },
-    "kayu_jati": { name: "Kayu Jati Gelondong", weight: 8.0, basePrice: 280, origin: "Bag Berg" },
-    "batu_pondasi": { name: "Batu Kali Pondasi", weight: 6.0, basePrice: 95, origin: "Bag Berg" },
-    "batu_asah": { name: "Batu Asah Halus", weight: 2.0, basePrice: 60, origin: "Bag Berg" },
-    "batang_arang": { name: "Arang Kayu Tungku", weight: 3.0, basePrice: 50, origin: "Bag Berg" },
-    "baja_mentah": { name: "Batangan Baja Tempa", weight: 4.5, basePrice: 220, origin: "Bag Berg" },
-
-    // --------------------------------------------------------------------------
-    // 8. KHAA WALL EE (Bukit Peternakan) - 6 Komoditas
-    // --------------------------------------------------------------------------
-    "susu_murni": { name: "Susu Sapi Murni", weight: 1.0, basePrice: 35, origin: "Khaa Wall Ee" },
-    "kulit_olah": { name: "Kulit Sapi Olahan", weight: 3.0, basePrice: 210, origin: "Khaa Wall Ee" },
-    "keju_bukit": { name: "Keju Olahan Bukit", weight: 0.6, basePrice: 135, origin: "Khaa Wall Ee" },
-    "wol_domba": { name: "Gulungan Wol Domba", weight: 1.5, basePrice: 90, origin: "Khaa Wall Ee" },
-    "mentega_segar": { name: "Mentega Susu Murni", weight: 0.7, basePrice: 80, origin: "Khaa Wall Ee" },
-    "tulang_hewan": { name: "Tulang Ternak Ukir", weight: 2.0, basePrice: 55, origin: "Khaa Wall Ee" },
-
-    // --------------------------------------------------------------------------
-    // 9. KERAJAAN KOTA GALUH (Ibu Kota Kerajaan) - 6 Komoditas
-    // --------------------------------------------------------------------------
-    "kain_sutra": { name: "Kain Sutra Tempa", weight: 0.5, basePrice: 450, origin: "Kerajaan Kota Galuh" },
-    "perhiasan_perak": { name: "Perhiasan Perak Istana", weight: 0.3, basePrice: 680, origin: "Kerajaan Kota Galuh" },
-    "parfum_kerajaan": { name: "Minyak Wangi Bangsawan", weight: 0.2, basePrice: 520, origin: "Kerajaan Kota Galuh" },
-    "kertas_perkamen": { name: "Kertas Perkamen Kuno", weight: 0.2, basePrice: 180, origin: "Kerajaan Kota Galuh" },
-    "porselen_cina": { name: "Porselen Hias Istana", weight: 2.5, basePrice: 750, origin: "Kerajaan Kota Galuh" },
-    "senjata_tempa": { name: "Pedang Kehormatan Istana", weight: 4.0, basePrice: 1100, origin: "Kerajaan Kota Galuh" }
-};
-
-// Equipment items (Backpacks & Carts)
-const EQUIPMENT = {
-    "tas_kecil": { name: "Tas Punggung Kecil", type: "backpack", cap: 5.0, price: 1850 },
-    "tas_besar": { name: "Tas Punggung Besar", type: "backpack", cap: 10.0, price: 5500 },
-    "cart_10": { name: "Cart 10kg (Gerobak Kecil)", type: "cart", cap: 10.0, price: 12500, penalty: 0.25 },
-    "cart_25": { name: "Cart 25kg (Gerobak Sedang)", type: "cart", cap: 25.0, price: 32000, penalty: 0.50 },
-    "cart_50": { name: "Cart 50kg (Gerobak Besar)", type: "cart", cap: 50.0, price: 85000, penalty: 1.00 },
-    "cart_100": { name: "Cart 100kg (Gerobak Ekstra)", type: "cart", cap: 100.0, price: 220000, penalty: 2.00 },
-    "cart_kuda_1": { name: "Cart Kuda Tunggal (50kg)", type: "cart", cap: 50.0, price: 650000, speedMultiplier: 2.0 },
-    "cart_kuda_2": { name: "Cart Kuda Ganda (100kg)", type: "cart", cap: 100.0, price: 1800000, speedMultiplier: 3.0 }
-};
-
-// Pemetaan Nama Skill (Termasuk Berdagang)
-const SKILL_NAMES = {
-    navigasiFisik: "Navigasi & Ketahanan Fisik",
-    pengolahanPangan: "Pengolahan Pangan",
-    agrariaPertanian: "Pengetahuan Agraria",
-    kerajinanKonstruksi: "Kerajinan & Konstruksi",
-    botanikalRempah: "Botanikal & Rempah",
-    manajemenMuatan: "Manajemen Muatan",
-    tambangPertukangan: "Tambang & Pertukangan",
-    literasiAdministrasi: "Literasi & Administrasi",
-    peternakanKulit: "Peternakan & Olah Kulit",
-    berdagang: "Berdagang & Negosiasi"
-};
-
-/* ==========================================================================
-   LIBRARY BOOKS DATA (Perpustakaan Agung dengan Sistem Level & Durasi)
-   ========================================================================== */
-const LIBRARY_BOOKS = {
-    "kitab_navigasi": {
-        name: "Kitab Navigasi & Geografi Pesisir",
-        targetSkill: "navigasiFisik",
-        getExp: () => Math.floor(Math.random() * 6) + 8, // Random 8 - 13 XP per jam
-        desc: "Panduan membaca rasi bintang, peta arus sungai besar, dan jalur pelayaran aman di pesisir."
-    },
-    "kitab_pangan": {
-        name: "Ensiklopedia Pengolahan & Pengawetan Pangan",
-        targetSkill: "pengolahanPangan",
-        getExp: () => Math.floor(Math.random() * 6) + 8,
-        desc: "Metode kuno menggaramkan, mengeringkan, dan memfermentasi hasil bumi dan laut agar tahan lama."
-    },
-    "kitab_agraria": {
-        name: "Risalah Agraria & Pengairan Sawah",
-        targetSkill: "agrariaPertanian",
-        getExp: () => Math.floor(Math.random() * 6) + 8,
-        desc: "Teknik mengatur saluran irigasi tradisional, pemilihan bibit unggul, dan siklus musim panen raya."
-    },
-    "kitab_konstruksi": {
-        name: "Panduan Kerajinan & Konstruksi Bambu",
-        targetSkill: "kerajinanKonstruksi",
-        getExp: () => Math.floor(Math.random() * 6) + 8,
-        desc: "Ilmu dasar memilih serat kayu, teknik anyaman bambu kokoh, dan struktur bangunan tahan gempa."
-    },
-    "kitab_botanikal": {
-        name: "Kompendium Botanikal & Rempah Nusantara",
-        targetSkill: "botanikalRempah",
-        getExp: () => Math.floor(Math.random() * 6) + 8,
-        desc: "Katalog lengkap khasiat tanaman obat, cengkeh, kapulaga, dan ramuan herbal penyembuh."
-    },
-    "kitab_muatan": {
-        name: "Manual Manajemen Logistik & Muatan",
-        targetSkill: "manajemenMuatan",
-        getExp: () => Math.floor(Math.random() * 6) + 8,
-        desc: "Strategi penataan gerobak dagang, efisiensi berat kargo, dan kalkulasi rute distribusi pedagang."
-    },
-    "kitab_tambang": {
-        name: "Teks Pertambangan & Panduan Tempa Besi",
-        targetSkill: "tambangPertukangan",
-        getExp: () => Math.floor(Math.random() * 6) + 8,
-        desc: "Teknik dasar membaca urat batu, pemecahan bijih besi mentah, dan panduan dasar menempa baja."
-    },
-    "kitab_administrasi": {
-        name: "Arsip Administrasi & Literasi Kerajaan",
-        targetSkill: "literasiAdministrasi",
-        getExp: () => Math.floor(Math.random() * 6) + 8,
-        desc: "Tata cara pembukuan keuangan niaga, korespondensi resmi istana, dan penyusunan cukai pasar."
-    },
-    "kitab_peternakan": {
-        name: "Buku Panduan Peternakan & Pengolahan Kulit",
-        targetSkill: "peternakanKulit",
-        getExp: () => Math.floor(Math.random() * 6) + 8,
-        desc: "Metode pemeliharaan ternak sapi/domba, pemerahan susu berkualitas, serta teknik penyamakan kulit."
-    },
-    "kitab_berdagang": {
-        name: "Risalah Niaga & Seni Negosiasi Pasar",
-        targetSkill: "berdagang",
-        getExp: () => Math.floor(Math.random() * 6) + 8,
-        desc: "Trik membaca fluktuasi harga komoditas antar wilayah, teknik tawar-menawar, dan memperluas jaringan niaga."
-    }
-};
-
-/**
- * Fungsi helper untuk menghitung total biaya belajar berdasarkan level saat ini dan durasi (jam)
- * - Base harga ke Level 1: 600 koin / jam
- * - Kelipatan level berikutnya: 1.8x dari harga level sebelumnya
- */
-function calculateStudyCost(currentLevel, hours) {
-    let baseRatePerHour = 600;
-    let totalCost = 0;
-    
-    // Hitung akumulasi biaya per level berdasarkan durasi jam yang dipilih
-    for (let i = 0; i < hours; i++) {
-        // Level target yang akan dipelajari pada iterasi ini
-        let targetLevel = currentLevel + i;
-        let multiplier = Math.pow(1.8, targetLevel); // 1.8^level kelipatan
-        totalCost += Math.round(baseRatePerHour * multiplier);
-    }
-    
-    return totalCost;
+"Che A Miss": {
+name: "Che A Miss",
+type: "Pesisir Utama",
+desc: "Muara sungai besar dan pesisir pantai tempat berkumpulnya pedagang pemula.",
+neighbors: {
+"Male Bear": { dist: 4.5, terrain: "pesisir" },
+"Bane A Gare": { dist: 6.2, terrain: "dataran" }
+},
+innCost: 30, innMealCost: 50, housePrice: 750000,
+jobs: [
+{ title: "Buruh Angkut Ikan & Garam", reqSkill: null, expSkill: "navigasi", basePay: 4 },
+{ title: "Pengering & Pengasin Ikan", reqSkill: null, expSkill: "pangan", basePay: 4.5 },
+{ title: "Pengawas Gudang Pesisir", reqSkill: { navigasi: 4 }, expSkill: "navigasi", basePay: 12 },
+{ title: "Nakhoda Kapal Dagang Pesisir", reqSkill: { navigasi: 6, muatan: 5, admin: 4 }, expSkill: "navigasi", basePay: 45 }
+]
+},
+"Male Bear": {
+name: "Male Bear",
+type: "Pesisir Rawa",
+desc: "Daerah pesisir berbatu dengan akses rawa-rawa liar dan perikanan laut.",
+neighbors: {
+"Che A Miss": { dist: 4.5, terrain: "pesisir" },
+"Bun She Riie": { dist: 5.8, terrain: "rawa" }
+},
+innCost: 65, innMealCost: 95, housePrice: 1350000,
+jobs: [
+{ title: "Pemungut Kerang & Hasil Rawa", reqSkill: null, expSkill: "navigasi", basePay: 4.5 },
+{ title: "Pembersih Perahu Nelayan", reqSkill: null, expSkill: "tambang", basePay: 5 },
+{ title: "Penyortir Mutu Hasil Laut", reqSkill: { pangan: 4 }, expSkill: "pangan", basePay: 14 },
+{ title: "Pengelola Dermaga Rawa", reqSkill: { navigasi: 6, admin: 5 }, expSkill: "admin", basePay: 50 }
+]
+},
+"Bun She Riie": {
+name: "Bun She Riie",
+type: "Pesawahan Selatan",
+desc: "Hamparan sawah yang luas dengan saluran irigasi tradisional.",
+neighbors: {
+"Male Bear": { dist: 5.8, terrain: "rawa" },
+"Bho Junk": { dist: 3.8, terrain: "dataran" }
+},
+innCost: 65, innMealCost: 95, housePrice: 1350000,
+jobs: [
+{ title: "Buruh Pemungut Gabah", reqSkill: null, expSkill: "agraria", basePay: 4.2 },
+{ title: "Pembersih Kandang Unggas", reqSkill: null, expSkill: "peternakan", basePay: 4.5 },
+{ title: "Operator Alat Giling Padi", reqSkill: { agraria: 4 }, expSkill: "agraria", basePay: 15 },
+{ title: "Pengawas Lumbung Desa", reqSkill: { agraria: 6, muatan: 5, admin: 4 }, expSkill: "agraria", basePay: 52 }
+]
+},
+"Bho Junk": {
+name: "Bho Junk",
+type: "Pesawahan Pelosok",
+desc: "Desa lumbung padi pelindung yang dikelilingi perbukitan hijau.",
+neighbors: {
+"Bun She Riie": { dist: 3.8, terrain: "dataran" },
+"Sadhayana": { dist: 7.0, terrain: "bukit" }
+},
+innCost: 150, innMealCost: 200, housePrice: 2500000,
+jobs: [
+{ title: "Pencari Serat & Bambu Liar", reqSkill: null, expSkill: "konstruksi", basePay: 4.8 },
+{ title: "Pembuat Telur Asin Desa", reqSkill: null, expSkill: "pangan", basePay: 5 },
+{ title: "Pengrajin Anyaman Bambu", reqSkill: { konstruksi: 4 }, expSkill: "konstruksi", basePay: 18 },
+{ title: "Kepala Desa Pengadaan Pangan", reqSkill: { agraria: 6, konstruksi: 5, admin: 4 }, expSkill: "admin", basePay: 60 }
+]
+},
+"Sadhayana": {
+name: "Sadhayana",
+type: "Lembah Rempah",
+desc: "Lembah lembap di kaki bukit yang tanahnya sangat subur untuk tanaman obat & rempah.",
+neighbors: {
+"Bho Junk": { dist: 7.0, terrain: "bukit" },
+"Kerajaan Kota Galuh": { dist: 8.5, terrain: "gunung" }
+},
+innCost: 350, innMealCost: 430, housePrice: 4800000,
+jobs: [
+{ title: "Pemetik Bunga & Rempah Liar", reqSkill: null, expSkill: "botanikal", basePay: 5.5 },
+{ title: "Pencari Madu Hutan", reqSkill: null, expSkill: "navigasi", basePay: 6 },
+{ title: "Pedagang Keliling Rempah Lembah", reqSkill: { berdagang: 3 }, expSkill: "berdagang", basePay: 22 },
+{ title: "Asisten Racik Obat Lembah", reqSkill: { botanikal: 7, admin: 5, pangan: 4 }, expSkill: "botanikal", basePay: 75 }
+]
+},
+"Bane A Gare": {
+name: "Bane A Gare",
+type: "Pesawahan Perbatasan",
+desc: "Pasar transit perbatasan antara pesisir dan wilayah pegunungan.",
+neighbors: {
+"Che A Miss": { dist: 6.2, terrain: "dataran" },
+"Bag Berg": { dist: 7.5, terrain: "bukit" }
+},
+innCost: 150, innMealCost: 200, housePrice: 2500000,
+jobs: [
+{ title: "Buruh Panggul Pasar Perbatasan", reqSkill: null, expSkill: "muatan", basePay: 5 },
+{ title: "Penjaga Penampungan Ternak", reqSkill: null, expSkill: "peternakan", basePay: 5 },
+{ title: "Pengatur Jadwal Rute Cart", reqSkill: { muatan: 4 }, expSkill: "muatan", basePay: 19 },
+{ title: "Mandor Transit Perbatasan", reqSkill: { muatan: 6, agraria: 5, admin: 4 }, expSkill: "muatan", basePay: 64 }
+]
+},
+"Bag Berg": {
+name: "Bag Berg",
+type: "Pegunungan Tambang",
+desc: "Wilayah berbatu terjal, dingin, tempat para penebang kayu dan penambang batu/besi.",
+neighbors: {
+"Bane A Gare": { dist: 7.5, terrain: "bukit" },
+"Khaa Wall Ee": { dist: 9.0, terrain: "gunung" }
+},
+innCost: 350, innMealCost: 430, housePrice: 4800000,
+jobs: [
+{ title: "Pemecah Batu Kali & Tambang", reqSkill: null, expSkill: "tambang", basePay: 6 },
+{ title: "Penebang Kayu Jati Kasar", reqSkill: null, expSkill: "tambang", basePay: 6 },
+{ title: "Pedagang Keliling Besi & Kayu", reqSkill: { berdagang: 3 }, expSkill: "berdagang", basePay: 25 },
+{ title: "Kepala Pengawas Tambang Kerajaan", reqSkill: { tambang: 7, muatan: 5, navigasi: 4 }, expSkill: "tambang", basePay: 80 }
+]
+},
+"Khaa Wall Ee": {
+name: "Khaa Wall Ee",
+type: "Bukit Peternakan",
+desc: "Padang rumput perbukitan yang luas, tempat peternakan sapi/domba milik warga desa.",
+neighbors: {
+"Bag Berg": { dist: 9.0, terrain: "gunung" },
+"Kerajaan Kota Galuh": { dist: 10.2, terrain: "bukit" }
+},
+innCost: 750, innMealCost: 880, housePrice: 8500000,
+jobs: [
+{ title: "Gembala Sapi & Domba", reqSkill: null, expSkill: "peternakan", basePay: 6.5 },
+{ title: "Pemerah Susu Murni", reqSkill: null, expSkill: "peternakan", basePay: 7 },
+{ title: "Pengolah Kulit & Bulu Domba", reqSkill: { peternakan: 4 }, expSkill: "peternakan", basePay: 28 },
+{ title: "Penunggang & Pelatih Kuda Cart", reqSkill: { peternakan: 6, muatan: 5, navigasi: 5 }, expSkill: "peternakan", basePay: 92 }
+]
+},
+"Kerajaan Kota Galuh": {
+name: "Kerajaan Kota Galuh",
+type: "Ibu Kota Kerajaan",
+desc: "Pusat peradaban, benteng megah, Perpustakaan Agung Kerajaan, dan pusat perdagangan elit.",
+neighbors: {
+"Sadhayana": { dist: 8.5, terrain: "gunung" },
+"Khaa Wall Ee": { dist: 10.2, terrain: "bukit" }
+},
+innCost: 1800, innMealCost: 2100, housePrice: 25000000,
+jobs: [
+{ title: "Pembersih Pelataran Benteng", reqSkill: null, expSkill: "navigasi", basePay: 8 },
+{ title: "Pelayan Kedai Bangsawan", reqSkill: null, expSkill: "admin", basePay: 9 },
+{ title: "Kuli Panggul Gerobak Kerajaan", reqSkill: null, expSkill: "muatan", basePay: 10 },
+{ title: "Juru Ketik & Pengarsip Perpus", reqSkill: { admin: 4 }, expSkill: "admin", basePay: 35 },
+{ title: "Penjaga Gudang Bahan Pokok", reqSkill: { muatan: 4, agraria: 3 }, expSkill: "muatan", basePay: 38 },
+{ title: "Pengolah Sutra & Busana Istana", reqSkill: { peternakan: 4, konstruksi: 3 }, expSkill: "konstruksi", basePay: 42 },
+{ title: "Pengawas Kereta Kuda Utama", reqSkill: { peternakan: 4, navigasi: 3 }, expSkill: "navigasi", basePay: 45 },
+{ title: "Penatap Pasar & Cukai Dagang", reqSkill: { admin: 4, muatan: 3 }, expSkill: "admin", basePay: 48 },
+{ title: "Arsitek Irigasi & Benteng", reqSkill: { tambang: 6, agraria: 4 }, expSkill: "tambang", basePay: 110 },
+{ title: "Tabib Racik Obat Istana", reqSkill: { botanikal: 6, pangan: 5 }, expSkill: "botanikal", basePay: 120 },
+{ title: "Nakhoda Armada Kerajaan", reqSkill: { navigasi: 6, muatan: 5 }, expSkill: "navigasi", basePay: 130 },
+{ title: "Mandor Logistik Agung", reqSkill: { muatan: 6, navigasi: 5, admin: 4 }, expSkill: "muatan", basePay: 140 },
+{ title: "Juru Tulis Diplomatik Kerajaan", reqSkill: { admin: 6, navigasi: 4 }, expSkill: "admin", basePay: 150 },
+{ title: "Koki Utama Jamuan Istana", reqSkill: { pangan: 6, botanikal: 5 }, expSkill: "pangan", basePay: 160 },
+{ title: "Menteri Keuangan & Perdagangan", reqSkill: { admin: 8, muatan: 7, navigasi: 6, agraria: 5, tambang: 5 }, reqExp: 200, expSkill: "admin", basePay: 600 },
+{ title: "Kepala Logistik & Pasokan Pangan", reqSkill: { muatan: 8, navigasi: 7, agraria: 7, peternakan: 6, admin: 5 }, reqExp: 180, expSkill: "muatan", basePay: 550 },
+{ title: "Kepala Tabib & Herbalis Agung", reqSkill: { botanikal: 8, pangan: 7, admin: 7, agraria: 6 }, reqExp: 150, expSkill: "botanikal", basePay: 500 },
+{ title: "Panglima Pertambangan & Benteng", reqSkill: { tambang: 8, muatan: 7, navigasi: 6, peternakan: 5 }, reqExp: 160, expSkill: "tambang", basePay: 530 }
+]
 }
+};
+
+// 54 Trade Goods Items
+const ITEMS = {
+"garam_kasar": { name: "Garam Kasar Tambak", weight: 0.5, basePrice: 12, origin: "Che A Miss" },
+"ikan_asin": { name: "Ikan Asin Pengeringan", weight: 0.8, basePrice: 18, origin: "Che A Miss" },
+"terasi_udang": { name: "Terasi Udang Pesisir", weight: 0.4, basePrice: 22, origin: "Che A Miss" },
+"kerang_mutiara": { name: "Kerang Mutiara Mentah", weight: 0.3, basePrice: 75, origin: "Che A Miss" },
+"minyak_ikan": { name: "Minyak Hati Ikan Hiu", weight: 0.7, basePrice: 55, origin: "Che A Miss" },
+"rumput_laut": { name: "Rumput Laut Kering", weight: 0.6, basePrice: 25, origin: "Che A Miss" },
+
+"ikan_segar": { name: "Ikan Laut Segar", weight: 1.0, basePrice: 25, origin: "Male Bear" },
+"kerang_hitam": { name: "Kerang Hitam Rawa", weight: 1.2, basePrice: 30, origin: "Male Bear" },
+"minyak_bakau": { name: "Minyak Rempah Bakau", weight: 0.6, basePrice: 45, origin: "Male Bear" },
+"kepiting_bakau": { name: "Kepiting Bakau Besar", weight: 1.5, basePrice: 68, origin: "Male Bear" },
+"lumpur_terapi": { name: "Lumpur Mineral Rawa", weight: 2.0, basePrice: 35, origin: "Male Bear" },
+"serat_bakau": { name: "Serat Batang Bakau", weight: 1.1, basePrice: 28, origin: "Male Bear" },
+
+"beras_putih": { name: "Beras Putih Super", weight: 2.0, basePrice: 40, origin: "Bun She Riie" },
+"gabah_kering": { name: "Gabah Kering Giling", weight: 2.5, basePrice: 28, origin: "Bun She Riie" },
+"dedak_halus": { name: "Dedak Padi Halus", weight: 1.5, basePrice: 15, origin: "Bun She Riie" },
+"tepung_beras": { name: "Tepung Beras Putih", weight: 1.8, basePrice: 48, origin: "Bun She Riie" },
+"bibit_padi": { name: "Karung Bibit Unggul", weight: 3.0, basePrice: 85, origin: "Bun She Riie" },
+"jerami_kering": { name: "Ikat Jerami Pakan", weight: 1.2, basePrice: 12, origin: "Bun She Riie" },
+
+"telur_asin": { name: "Telur Asin Desa", weight: 0.5, basePrice: 20, origin: "Bho Junk" },
+"anyaman_bambu": { name: "Anyaman Bambu Wadah", weight: 1.5, basePrice: 65, origin: "Bho Junk" },
+"minyak_kelapa": { name: "Minyak Kelapa Murni", weight: 1.0, basePrice: 50, origin: "Bho Junk" },
+"keranjang_tampah": { name: "Tampah Bambu Besar", weight: 1.8, basePrice: 58, origin: "Bho Junk" },
+"gula_kelapa": { name: "Gula Semut Kelapa", weight: 0.9, basePrice: 42, origin: "Bho Junk" },
+"bibit_bambu": { name: "Tunas Bambu Pilihan", weight: 2.2, basePrice: 33, origin: "Bho Junk" },
+
+"cengkeh_kering": { name: "Cengkeh Kering", weight: 0.2, basePrice: 85, origin: "Sadhayana" },
+"kapulaga": { name: "Kapulaga Lembah", weight: 0.2, basePrice: 90, origin: "Sadhayana" },
+"madu_hutan": { name: "Madu Hutan Murni", weight: 0.8, basePrice: 120, origin: "Sadhayana" },
+"kayu_manis": { name: "Batang Kayu Manis", weight: 0.4, basePrice: 70, origin: "Sadhayana" },
+"ekstrak_ginseng": { name: "Ekstrak Akar Ginseng", weight: 0.3, basePrice: 160, origin: "Sadhayana" },
+"bunga_herbal": { name: "Bunga Obat Kering", weight: 0.2, basePrice: 65, origin: "Sadhayana" },
+
+"gula_aren": { name: "Gula Aren Cetak", weight: 1.0, basePrice: 38, origin: "Bane A Gare" },
+"dendeng_sapi": { name: "Dendeng Sapi Transit", weight: 0.7, basePrice: 110, origin: "Bane A Gare" },
+"tali_tambang": { name: "Tali Tambang Serat", weight: 1.2, basePrice: 42, origin: "Bane A Gare" },
+"kopi_perbatasan": { name: "Biji Kopi Perbatasan", weight: 0.8, basePrice: 78, origin: "Bane A Gare" },
+"tembakau_lokal": { name: "Daun Tembakau Kering", weight: 0.5, basePrice: 95, origin: "Bane A Gare" },
+"minyak_lampu": { name: "Minyak Penerangan", weight: 1.0, basePrice: 45, origin: "Bane A Gare" },
+
+"biji_besi": { name: "Biji Besi Mentah", weight: 5.0, basePrice: 150, origin: "Bag Berg" },
+"kayu_jati": { name: "Kayu Jati Gelondong", weight: 8.0, basePrice: 280, origin: "Bag Berg" },
+"batu_pondasi": { name: "Batu Kali Pondasi", weight: 6.0, basePrice: 95, origin: "Bag Berg" },
+"batu_asah": { name: "Batu Asah Halus", weight: 2.0, basePrice: 60, origin: "Bag Berg" },
+"batang_arang": { name: "Arang Kayu Tungku", weight: 3.0, basePrice: 50, origin: "Bag Berg" },
+"baja_mentah": { name: "Batangan Baja Tempa", weight: 4.5, basePrice: 220, origin: "Bag Berg" },
+
+"susu_murni": { name: "Susu Sapi Murni", weight: 1.0, basePrice: 35, origin: "Khaa Wall Ee" },
+"kulit_olah": { name: "Kulit Sapi Olahan", weight: 3.0, basePrice: 210, origin: "Khaa Wall Ee" },
+"keju_bukit": { name: "Keju Olahan Bukit", weight: 0.6, basePrice: 135, origin: "Khaa Wall Ee" },
+"wol_domba": { name: "Gulungan Wol Domba", weight: 1.5, basePrice: 90, origin: "Khaa Wall Ee" },
+"mentega_segar": { name: "Mentega Susu Murni", weight: 0.7, basePrice: 80, origin: "Khaa Wall Ee" },
+"tulang_hewan": { name: "Tulang Ternak Ukir", weight: 2.0, basePrice: 55, origin: "Khaa Wall Ee" },
+
+"kain_sutra": { name: "Kain Sutra Tempa", weight: 0.5, basePrice: 450, origin: "Kerajaan Kota Galuh" },
+"perhiasan_perak": { name: "Perhiasan Perak Istana", weight: 0.3, basePrice: 680, origin: "Kerajaan Kota Galuh" },
+"parfum_kerajaan": { name: "Minyak Wangi Bangsawan", weight: 0.2, basePrice: 520, origin: "Kerajaan Kota Galuh" },
+"kertas_perkamen": { name: "Kertas Perkamen Kuno", weight: 0.2, basePrice: 180, origin: "Kerajaan Kota Galuh" },
+"porselen_cina": { name: "Porselen Hias Istana", weight: 2.5, basePrice: 750, origin: "Kerajaan Kota Galuh" },
+"senjata_tempa": { name: "Pedang Kehormatan Istana", weight: 4.0, basePrice: 1100, origin: "Kerajaan Kota Galuh" }
+
+
+};
+
+// Equipment items
+const EQUIPMENT = {
+"tas_kecil": { name: "Tas Punggung Kecil", type: "backpack", cap: 5.0, price: 1850 },
+"tas_besar": { name: "Tas Punggung Besar", type: "backpack", cap: 10.0, price: 5500 },
+"cart_10": { name: "Cart 10kg (Gerobak Kecil)", type: "cart", cap: 10.0, price: 12500 },
+"cart_25": { name: "Cart 25kg (Gerobak Sedang)", type: "cart", cap: 25.0, price: 32000 },
+"cart_50": { name: "Cart 50kg (Gerobak Besar)", type: "cart", cap: 50.0, price: 85000 },
+"cart_100": { name: "Cart 100kg (Gerobak Ekstra)", type: "cart", cap: 100.0, price: 220000 },
+"cart_kuda_1": { name: "Cart Kuda Tunggal (50kg)", type: "cart", cap: 50.0, price: 650000 },
+"cart_kuda_2": { name: "Cart Kuda Ganda (100kg)", type: "cart", cap: 100.0, price: 1800000 }
+};
+
+// Simple Skill Names
+const SKILL_NAMES = {
+navigasi: "Navigasi",
+pangan: "Pangan",
+agraria: "Agraria",
+konstruksi: "Konstruksi",
+botanikal: "Botanikal",
+muatan: "Muatan",
+tambang: "Tambang",
+admin: "Admin",
+peternakan: "Peternakan",
+berdagang: "Berdagang"
+};
 
 /* ==========================================================================
-   240+ VARIASI NEWS POOL BERBASIS DINAMIS & KONDISI WILAYAH
-   ========================================================================== */
+40 MENU KEDAI KHAS PER WILAYAH (+1 s.d +6 Stamina, Multiplier 1.4)
+========================================================================== */
+const TAVERN_MENUS = {
+"Che A Miss": [
+{ id: "cm_1", name: "Sup Kepala Ikan Pesisir", stamina: 1, price: 175 },
+{ id: "cm_2", name: "Nasi Goreng Garam Laut", stamina: 1, price: 175 },
+{ id: "cm_3", name: "Pepes Ikan Asin Bakar", stamina: 2, price: 245 },
+{ id: "cm_4", name: "Sate Kerang Bumbu Kelapa", stamina: 2, price: 245 },
+{ id: "cm_5", name: "Bubur Ikan Kuah Hangat", stamina: 3, price: 343 },
+{ id: "cm_6", name: "Udang Bakar Madu Pesisir", stamina: 4, price: 480 },
+{ id: "cm_7", name: "Gulai Tenggiri Istimewa", stamina: 5, price: 672 },
+{ id: "cm_8", name: "Prasmanan Raja Pesisir", stamina: 6, price: 941 }
+],
+"Male Bear": [
+{ id: "mb_1", name: "Sup Kerang Hitam Rawa", stamina: 1, price: 175 },
+{ id: "mb_2", name: "Ikan Rawa Bakar Mentega", stamina: 2, price: 245 },
+{ id: "mb_3", name: "Kepiting Saus Bakau", stamina: 3, price: 343 },
+{ id: "mb_4", name: "Gulai Kepala Ikan Rawa", stamina: 4, price: 480 },
+{ id: "mb_5", name: "Paket Perjamuan Nelayan", stamina: 5, price: 672 },
+{ id: "mb_6", name: "Jamuan Mewah Dermaga", stamina: 6, price: 941 }
+],
+"Bun She Riie": [
+{ id: "bs_1", name: "Nasi Timbel Sawah", stamina: 1, price: 175 },
+{ id: "bs_2", name: "Pecel Lele Daun Pisang", stamina: 2, price: 245 },
+{ id: "bs_3", name: "Ayam Goreng Lengkuas", stamina: 3, price: 343 },
+{ id: "bs_4", name: "Nasi Liwet Komplit Padi", stamina: 4, price: 480 },
+{ id: "bs_5", name: "Bebek Betutu Sawah", stamina: 5, price: 672 },
+{ id: "bs_6", name: "Pesta Lumbung Desa", stamina: 6, price: 941 }
+],
+"Bho Junk": [
+{ id: "bj_1", name: "Telur Asin Bakar Rempah", stamina: 1, price: 175 },
+{ id: "bj_2", name: "Sayur Lodeh Bambu Muda", stamina: 2, price: 245 },
+{ id: "bj_3", name: "Ayam Kampung Kukus", stamina: 3, price: 343 },
+{ id: "bj_4", name: "Nasi Bakar Ayam Suwir", stamina: 4, price: 480 },
+{ id: "bj_5", name: "Sate Ayam Bambu Pelosok", stamina: 5, price: 672 },
+{ id: "bj_6", name: "Jamuan Agung Dusun Bambu", stamina: 6, price: 941 }
+],
+"Sadhayana": [
+{ id: "sd_1", name: "Teh Rempah Hangat Lembah", stamina: 1, price: 175 },
+{ id: "sd_2", name: "Sup Ayam Jahe Merah", stamina: 2, price: 245 },
+{ id: "sd_3", name: "Daging Sapi Rempah Cengkeh", stamina: 3, price: 343 },
+{ id: "sd_4", name: "Nasi Kuning Wangi Rempah", stamina: 4, price: 480 },
+{ id: "sd_5", name: "Sup Ginseng Madu Hutan", stamina: 5, price: 672 },
+{ id: "sd_6", name: "Jamuan Kaisar Herbal", stamina: 6, price: 941 }
+],
+"Bane A Gare": [
+{ id: "bg_1", name: "Kopi Hitam Perbatasan", stamina: 1, price: 175 },
+{ id: "bg_2", name: "Roti Panggang Gula Aren", stamina: 2, price: 245 },
+{ id: "bg_3", name: "Sup Dendeng Sapi Transit", stamina: 3, price: 343 },
+{ id: "bg_4", name: "Nasi Uduk Perbatasan", stamina: 4, price: 480 },
+{ id: "bg_5", name: "Sate Sapi Rempah Transit", stamina: 5, price: 672 },
+{ id: "bg_6", name: "Perjamuan Akbar Perbatasan", stamina: 6, price: 941 }
+],
+"Bag Berg": [
+{ id: "bb_1", name: "Sup Tulang Sapi Gunung", stamina: 1, price: 175 },
+{ id: "bb_2", name: "Daging Panggang Batu Arang", stamina: 2, price: 245 },
+{ id: "bb_3", name: "Stew Daging Hangat Salju", stamina: 3, price: 343 },
+{ id: "bb_4", name: "Nasi Goreng Merah Tambang", stamina: 4, price: 480 },
+{ id: "bb_5", name: "Sapi Guling Hangat Gunung", stamina: 5, price: 672 },
+{ id: "bb_6", name: "Perjamuan Para Kuli Besi", stamina: 6, price: 941 }
+],
+"Khaa Wall Ee": [
+{ id: "kw_1", name: "Susu Sapi Murni Hangat", stamina: 1, price: 175 },
+{ id: "kw_2", name: "Roti Keju Bukit", stamina: 2, price: 245 },
+{ id: "kw_3", name: "Sup Krim Susu & Daging", stamina: 3, price: 343 },
+{ id: "kw_4", name: "Steak Sapi Padang Rumput", stamina: 4, price: 480 },
+{ id: "kw_5", name: "Domba Guling Mentega Bukit", stamina: 5, price: 672 },
+{ id: "kw_6", name: "Pesta Raya Padang Bukit", stamina: 6, price: 941 }
+],
+"Kerajaan Kota Galuh": [
+{ id: "kg_1", name: "Teh Wangi Istana", stamina: 1, price: 175 },
+{ id: "kg_2", name: "Kue Kehormatan Bangsawan", stamina: 2, price: 245 },
+{ id: "kg_3", name: "Sup Ayam Rempah Istana", stamina: 3, price: 343 },
+{ id: "kg_4", name: "Nasi Kuning Kerajaan Mewah", stamina: 4, price: 480 },
+{ id: "kg_5", name: "Bebek Panggang Saus Madu Emas", stamina: 5, price: 672 },
+{ id: "kg_6", name: "Jamuan Agung Singgasana Raja", stamina: 6, price: 941 }
+]
+};
+
+// LIBRARY BOOKS (Perpustakaan per wilayah dengan batasan level 3)
+const LIBRARY_BOOKS = {
+"kitab_navigasi": { name: "Kitab Navigasi & Geografi", targetSkill: "navigasi", maxLvl: 3, desc: "Panduan membaca peta arus dan rasi bintang." },
+"kitab_pangan": { name: "Ensiklopedia Pangan", targetSkill: "pangan", maxLvl: 3, desc: "Metode pengawetan bahan makanan." },
+"kitab_agraria": { name: "Risalah Agraria Sawah", targetSkill: "agraria", maxLvl: 3, desc: "Teknik irigasi dan siklus musim." },
+"kitab_konstruksi": { name: "Panduan Konstruksi Bambu", targetSkill: "konstruksi", maxLvl: 3, desc: "Struktur bangunan dan anyaman." },
+"kitab_botanikal": { name: "Kompendium Botanikal", targetSkill: "botanikal", maxLvl: 3, desc: "Khasiat tanaman obat dan rempah." },
+"kitab_muatan": { name: "Manual Manajemen Logistik", targetSkill: "muatan", maxLvl: 3, desc: "Strategi penataan gerobak muatan." },
+"kitab_tambang": { name: "Teks Pertambangan", targetSkill: "tambang", maxLvl: 3, desc: "Pemecahan bijih besi dan tempa." },
+"kitab_administrasi": { name: "Arsip Administrasi", targetSkill: "admin", maxLvl: 3, desc: "Pembukuan keuangan dan cukai." },
+"kitab_peternakan": { name: "Buku Panduan Peternakan", targetSkill: "peternakan", maxLvl: 3, desc: "Pemeliharaan ternak dan kulit." },
+"kitab_berdagang": { name: "Risalah Niaga & Negosiasi", targetSkill: "berdagang", maxLvl: 3, desc: "Fluktuasi harga dan tawar menawar." }
+};
+
+// Pemetaan Kitab untuk Setiap Wilayah (Maksimal 1 atau 2 kitab per wilayah, Kota Galuh komplit)
+const REGION_LIBRARIES = {
+"Che A Miss": ["kitab_navigasi", "kitab_pangan"],
+"Male Bear": ["kitab_navigasi", "kitab_tambang"],
+"Bun She Riie": ["kitab_agraria", "kitab_muatan"],
+"Bho Junk": ["kitab_konstruksi", "kitab_pangan"],
+"Sadhayana": ["kitab_botanikal", "kitab_berdagang"],
+"Bane A Gare": ["kitab_muatan", "kitab_admin"],
+"Bag Berg": ["kitab_tambang", "kitab_konstruksi"],
+"Khaa Wall Ee": ["kitab_peternakan", "kitab_muatan"],
+"Kerajaan Kota Galuh": ["kitab_navigasi", "kitab_pangan", "kitab_agraria", "kitab_konstruksi", "kitab_botanikal", "kitab_muatan", "kitab_tambang", "kitab_administrasi", "kitab_peternakan", "kitab_berdagang"]
+};
+
+function calculateStudyCost(currentLevel, hours) {
+let baseRatePerHour = 600;
+let totalCost = 0;
+for (let i = 0; i < hours; i++) {
+let targetLevel = currentLevel + i;
+let multiplier = Math.pow(1.8, targetLevel);
+totalCost += Math.round(baseRatePerHour * multiplier);
+}
+return totalCost;
+}
 
 const NEWS_POOL = [
     // --------------------------------------------------------------------------
