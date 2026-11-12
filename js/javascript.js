@@ -46,20 +46,6 @@ let gameState = {
     logs: []
 };
 
-// Pemetaan Nama Skill (Termasuk Berdagang)
-const SKILL_NAMES = {
-    navigasiFisik: "Navigasi & Ketahanan Fisik",
-    pengolahanPangan: "Pengolahan Pangan",
-    agrariaPertanian: "Pengetahuan Agraria",
-    kerajinanKonstruksi: "Kerajinan & Konstruksi",
-    botanikalRempah: "Botanikal & Rempah",
-    manajemenMuatan: "Manajemen Muatan",
-    tambangPertukangan: "Tambang & Pertukangan",
-    literasiAdministrasi: "Literasi & Administrasi",
-    peternakanKulit: "Peternakan & Olah Kulit",
-    berdagang: "Berdagang & Negosiasi"
-};
-
 let currentTab = "profile";
 let gameTimer = null;
 
