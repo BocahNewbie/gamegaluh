@@ -156,23 +156,24 @@ while (s.exp >= reqExp && s.level < 8) {
 }
 
 function updateStaminaBar(newStamina) {
-gameState.player.stamina = Math.max(0, Math.min(gameState.player.maxStamina, newStamina));
-const bar = document.getElementById("header-stamina-bar");
-const text = document.getElementById("header-stamina-text");
-if (bar && text) {
-const pct = (gameState.player.stamina / gameState.player.maxStamina) * 100;
-bar.style.width = ${pct}%;
-text.innerText = ${Math.round(gameState.player.stamina)} / ${gameState.player.maxStamina};
+    gameState.player.stamina = Math.max(0, Math.min(gameState.player.maxStamina, newStamina));
+    const bar = document.getElementById("header-stamina-bar");
+    const text = document.getElementById("header-stamina-text");
+    if (bar && text) {
+        const pct = (gameState.player.stamina / gameState.player.maxStamina) * 100;
+        bar.style.width = `${pct}%`;
+        text.innerText = `${Math.round(gameState.player.stamina)} / ${gameState.player.maxStamina}`;
 
-    if (pct <= 25) {
-        bar.className = "stamina-bar-fill bg-red-500 h-full rounded-full";
-        text.className = "font-bold text-red-400";
-    } else if (pct <= 50) {
-        bar.className = "stamina-bar-fill bg-amber-500 h-full rounded-full";
-        text.className = "font-bold text-amber-400";
-    } else {
-        bar.className = "stamina-bar-fill bg-emerald-500 h-full rounded-full";
-        text.className = "font-bold text-emerald-400";
+        if (pct <= 25) {
+            bar.className = "stamina-bar-fill bg-red-500 h-full rounded-full";
+            text.className = "font-bold text-red-400";
+        } else if (pct <= 50) {
+            bar.className = "stamina-bar-fill bg-amber-500 h-full rounded-full";
+            text.className = "font-bold text-amber-400";
+        } else {
+            bar.className = "stamina-bar-fill bg-emerald-500 h-full rounded-full";
+            text.className = "font-bold text-emerald-400";
+        }
     }
 }
 
