@@ -198,8 +198,6 @@ function updateHeaderUI() {
     }
 }
 
-}
-
 function advanceTime(minutes) {
 gameState.time.minute += minutes;
 while (gameState.time.minute >= 60) {
