@@ -260,80 +260,90 @@ const SKILL_NAMES = {
 };
 
 /* ==========================================================================
-   LIBRARY BOOKS DATA (Kitab Perpustakaan Agung)
+   LIBRARY BOOKS DATA (Perpustakaan Agung dengan Sistem Level & Durasi)
    ========================================================================== */
 const LIBRARY_BOOKS = {
     "kitab_navigasi": {
         name: "Kitab Navigasi & Geografi Pesisir",
         targetSkill: "navigasiFisik",
-        getExp: () => Math.floor(Math.random() * 6) + 8, // Random 8 - 13 XP
-        cost: 150,
+        getExp: () => Math.floor(Math.random() * 6) + 8, // Random 8 - 13 XP per jam
         desc: "Panduan membaca rasi bintang, peta arus sungai besar, dan jalur pelayaran aman di pesisir."
     },
     "kitab_pangan": {
         name: "Ensiklopedia Pengolahan & Pengawetan Pangan",
         targetSkill: "pengolahanPangan",
-        getExp: () => Math.floor(Math.random() * 6) + 8, // Random 8 - 13 XP
-        cost: 150,
+        getExp: () => Math.floor(Math.random() * 6) + 8,
         desc: "Metode kuno menggaramkan, mengeringkan, dan memfermentasi hasil bumi dan laut agar tahan lama."
     },
     "kitab_agraria": {
         name: "Risalah Agraria & Pengairan Sawah",
         targetSkill: "agrariaPertanian",
-        getExp: () => Math.floor(Math.random() * 6) + 8, // Random 8 - 13 XP
-        cost: 150,
+        getExp: () => Math.floor(Math.random() * 6) + 8,
         desc: "Teknik mengatur saluran irigasi tradisional, pemilihan bibit unggul, dan siklus musim panen raya."
     },
     "kitab_konstruksi": {
         name: "Panduan Kerajinan & Konstruksi Bambu",
         targetSkill: "kerajinanKonstruksi",
-        getExp: () => Math.floor(Math.random() * 6) + 8, // Random 8 - 13 XP
-        cost: 150,
+        getExp: () => Math.floor(Math.random() * 6) + 8,
         desc: "Ilmu dasar memilih serat kayu, teknik anyaman bambu kokoh, dan struktur bangunan tahan gempa."
     },
     "kitab_botanikal": {
         name: "Kompendium Botanikal & Rempah Nusantara",
         targetSkill: "botanikalRempah",
-        getExp: () => Math.floor(Math.random() * 6) + 8, // Random 8 - 13 XP
-        cost: 150,
+        getExp: () => Math.floor(Math.random() * 6) + 8,
         desc: "Katalog lengkap khasiat tanaman obat, cengkeh, kapulaga, dan ramuan herbal penyembuh."
     },
     "kitab_muatan": {
         name: "Manual Manajemen Logistik & Muatan",
         targetSkill: "manajemenMuatan",
-        getExp: () => Math.floor(Math.random() * 6) + 8, // Random 8 - 13 XP
-        cost: 150,
+        getExp: () => Math.floor(Math.random() * 6) + 8,
         desc: "Strategi penataan gerobak dagang, efisiensi berat kargo, dan kalkulasi rute distribusi pedagang."
     },
     "kitab_tambang": {
         name: "Teks Pertambangan & Panduan Tempa Besi",
         targetSkill: "tambangPertukangan",
-        getExp: () => Math.floor(Math.random() * 6) + 8, // Random 8 - 13 XP
-        cost: 150,
+        getExp: () => Math.floor(Math.random() * 6) + 8,
         desc: "Teknik dasar membaca urat batu, pemecahan bijih besi mentah, dan panduan dasar menempa baja."
     },
     "kitab_administrasi": {
         name: "Arsip Administrasi & Literasi Kerajaan",
         targetSkill: "literasiAdministrasi",
-        getExp: () => Math.floor(Math.random() * 6) + 8, // Random 8 - 13 XP
-        cost: 150,
+        getExp: () => Math.floor(Math.random() * 6) + 8,
         desc: "Tata cara pembukuan keuangan niaga, korespondensi resmi istana, dan penyusunan cukai pasar."
     },
     "kitab_peternakan": {
         name: "Buku Panduan Peternakan & Pengolahan Kulit",
         targetSkill: "peternakanKulit",
-        getExp: () => Math.floor(Math.random() * 6) + 8, // Random 8 - 13 XP
-        cost: 150,
+        getExp: () => Math.floor(Math.random() * 6) + 8,
         desc: "Metode pemeliharaan ternak sapi/domba, pemerahan susu berkualitas, serta teknik penyamakan kulit."
     },
     "kitab_berdagang": {
         name: "Risalah Niaga & Seni Negosiasi Pasar",
         targetSkill: "berdagang",
-        getExp: () => Math.floor(Math.random() * 6) + 8, // Random 8 - 13 XP
-        cost: 150,
+        getExp: () => Math.floor(Math.random() * 6) + 8,
         desc: "Trik membaca fluktuasi harga komoditas antar wilayah, teknik tawar-menawar, dan memperluas jaringan niaga."
     }
 };
+
+/**
+ * Fungsi helper untuk menghitung total biaya belajar berdasarkan level saat ini dan durasi (jam)
+ * - Base harga ke Level 1: 600 koin / jam
+ * - Kelipatan level berikutnya: 1.8x dari harga level sebelumnya
+ */
+function calculateStudyCost(currentLevel, hours) {
+    let baseRatePerHour = 600;
+    let totalCost = 0;
+    
+    // Hitung akumulasi biaya per level berdasarkan durasi jam yang dipilih
+    for (let i = 0; i < hours; i++) {
+        // Level target yang akan dipelajari pada iterasi ini
+        let targetLevel = currentLevel + i;
+        let multiplier = Math.pow(1.8, targetLevel); // 1.8^level kelipatan
+        totalCost += Math.round(baseRatePerHour * multiplier);
+    }
+    
+    return totalCost;
+}
 
 /* ==========================================================================
    240+ VARIASI NEWS POOL BERBASIS DINAMIS & KONDISI WILAYAH
