@@ -691,13 +691,13 @@ if (currentTab === "profile") {
 }
 
 function showAlertModal(title, msg) {
-document.getElementById("modal-title").innerText = title;
-document.getElementById("modal-body").innerHTML = <p class="text-gray-300">${msg}</p>;
-document.getElementById("game-modal").classList.remove("hidden");
+    document.getElementById("modal-title").innerText = title;
+    document.getElementById("modal-body").innerHTML = `<p class="text-gray-300">${msg}</p>`;
+    document.getElementById("game-modal").classList.remove("hidden");
 }
 
 function closeModal() {
-document.getElementById("game-modal").classList.add("hidden");
+    document.getElementById("game-modal").classList.add("hidden");
 }
 
 function buyEquipment(eqId) {
