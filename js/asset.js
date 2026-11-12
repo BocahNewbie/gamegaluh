@@ -325,26 +325,6 @@ const LIBRARY_BOOKS = {
     }
 };
 
-/**
- * Fungsi helper untuk menghitung total biaya belajar berdasarkan level saat ini dan durasi (jam)
- * - Base harga ke Level 1: 600 koin / jam
- * - Kelipatan level berikutnya: 1.8x dari harga level sebelumnya
- */
-function calculateStudyCost(currentLevel, hours) {
-    let baseRatePerHour = 600;
-    let totalCost = 0;
-    
-    // Hitung akumulasi biaya per level berdasarkan durasi jam yang dipilih
-    for (let i = 0; i < hours; i++) {
-        // Level target yang akan dipelajari pada iterasi ini
-        let targetLevel = currentLevel + i;
-        let multiplier = Math.pow(1.8, targetLevel); // 1.8^level kelipatan
-        totalCost += Math.round(baseRatePerHour * multiplier);
-    }
-    
-    return totalCost;
-}
-
 /* ==========================================================================
    240+ VARIASI NEWS POOL BERBASIS DINAMIS & KONDISI WILAYAH
    ========================================================================== */
