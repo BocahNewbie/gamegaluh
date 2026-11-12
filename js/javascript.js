@@ -3,7 +3,7 @@
    ========================================================================== */
 
 let gameState = {
-    version: "1.1.0",
+    version: "1.3.0",
     lastSaved: Date.now(),
     player: {
         name: "Kang Aa",
@@ -12,8 +12,8 @@ let gameState = {
         maxStamina: 100,
         location: "Che A Miss",
         totalWorkHours: 0,
-        equippedBackpack: [], // Diubah menjadi Array agar mendukung tas kumulatif / berbarengan
-        equippedCart: null     // Cart eksklusif (hanya boleh satu)
+        equippedBackpack: [], 
+        equippedCart: null     
     },
     time: {
         day: 1,
@@ -30,13 +30,14 @@ let gameState = {
         manajemenMuatan: { level: 0, exp: 0 },
         tambangPertukangan: { level: 0, exp: 0 },
         literasiAdministrasi: { level: 0, exp: 0 },
-        peternakanKulit: { level: 0, exp: 0 }
+        peternakanKulit: { level: 0, exp: 0 },
+        berdagang: { level: 0, exp: 0 } // Skill Berdagang untuk syarat akses pasar
     },
     inventory: {
         pocket: [],
         cart: []
     },
-    regionStocks: {}, // Stok riil per wilayah
+    regionStocks: {}, 
     properties: {
         houses: {},
         rentedWarehouses: {}
@@ -45,14 +46,27 @@ let gameState = {
     logs: []
 };
 
+// Pemetaan Nama Skill (Termasuk Berdagang)
+const SKILL_NAMES = {
+    navigasiFisik: "Navigasi & Ketahanan Fisik",
+    pengolahanPangan: "Pengolahan Pangan",
+    agrariaPertanian: "Pengetahuan Agraria",
+    kerajinanKonstruksi: "Kerajinan & Konstruksi",
+    botanikalRempah: "Botanikal & Rempah",
+    manajemenMuatan: "Manajemen Muatan",
+    tambangPertukangan: "Tambang & Pertukangan",
+    literasiAdministrasi: "Literasi & Administrasi",
+    peternakanKulit: "Peternakan & Olah Kulit",
+    berdagang: "Berdagang & Negosiasi"
+};
+
 let currentTab = "profile";
 let gameTimer = null;
 
-/* UTILITIES & ATURAN KAPASITAS (TAS KUMULATIF & CART TUNGGAL) */
+/* UTILITIES & ATURAN KAPASITAS */
 function getPocketCapacity() {
-    let base = 5.0; // Kapasitas dasar saku
+    let base = 5.0; 
 
-    // Aturan Tas Punggung: Bisa kumulatif / berbarengan
     if (gameState.player.equippedBackpack) {
         let activeBps = Array.isArray(gameState.player.equippedBackpack) 
             ? gameState.player.equippedBackpack 
@@ -65,7 +79,6 @@ function getPocketCapacity() {
         });
     }
 
-    // Aturan Cart Logistik: Bersifat eksklusif (memilih salah satu, tidak bisa double)
     if (gameState.player.equippedCart && EQUIPMENT[gameState.player.equippedCart]) {
         base += EQUIPMENT[gameState.player.equippedCart].cap;
     }
@@ -101,7 +114,7 @@ function renderLogs() {
     container.innerHTML = gameState.logs.map(log => `<div class="text-gray-300 border-b border-galuhBorder/40 pb-1">${log}</div>`).join("");
 }
 
-/* SISTEM STOK WILAYAH (STOK SEENAKNYA / DINAMIS) */
+/* SISTEM STOK WILAYAH */
 function getRegionStock(regionName, itemId) {
     if (!gameState.regionStocks) gameState.regionStocks = {};
     if (!gameState.regionStocks[regionName]) {
@@ -133,7 +146,6 @@ function increaseRegionStock(regionName, itemId, amount) {
 /* ==========================================================================
    DINAMIS NEWS GENERATOR
    ========================================================================== */
-
 function generateNews() {
     const region = gameState.player.location;
     const currentRegionData = REGIONS[region];
@@ -178,7 +190,9 @@ function getReqExp(level) {
 }
 
 function addSkillExp(skillKey, amount) {
-    if (!gameState.skills[skillKey]) return;
+    if (!gameState.skills[skillKey]) {
+        gameState.skills[skillKey] = { level: 0, exp: 0 };
+    }
     let s = gameState.skills[skillKey];
     s.exp += amount;
     let reqExp = getReqExp(s.level);
@@ -186,7 +200,7 @@ function addSkillExp(skillKey, amount) {
     while (s.exp >= reqExp && s.level < 8) {
         s.exp -= reqExp;
         s.level += 1;
-        addLog(`<span class="text-emerald-400 font-bold">Level Skill Naik!</span> ${SKILL_NAMES[skillKey]} mencapai Level ${s.level}!`);
+        addLog(`<span class="text-emerald-400 font-bold">Level Skill Naik!</span> ${SKILL_NAMES[skillKey] || skillKey} mencapai Level ${s.level}!`);
         reqExp = getReqExp(s.level);
     }
 }
@@ -323,10 +337,8 @@ function renderTabContent() {
             `;
         }).join("");
 
-        // Menampilkan daftar tas yang sedang dipakai (kumulatif)
         let activeBps = Array.isArray(gameState.player.equippedBackpack) ? gameState.player.equippedBackpack : (gameState.player.equippedBackpack ? [gameState.player.equippedBackpack] : []);
         let equippedBpNames = activeBps.length > 0 ? activeBps.map(id => EQUIPMENT[id] ? EQUIPMENT[id].name : id).join(", ") : "Tidak Ada";
-        
         const equippedCt = gameState.player.equippedCart && EQUIPMENT[gameState.player.equippedCart] ? EQUIPMENT[gameState.player.equippedCart].name : "Tidak Ada";
 
         container.innerHTML = `
@@ -367,7 +379,7 @@ function renderTabContent() {
                 <div class="space-y-2">
                     <div class="flex justify-between items-center pb-1 border-b border-galuhBorder">
                         <h4 class="font-bold text-xs text-gray-300 uppercase tracking-wider"><i class="fa-solid fa-graduation-cap text-galuhGold mr-1"></i> Tingkat Keahlian (Skills)</h4>
-                        <span class="text-[10px] text-gray-500">Total 9 Cabang Skill</span>
+                        <span class="text-[10px] text-gray-500">Total 10 Cabang Skill</span>
                     </div>
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
                         ${skillsHtml}
@@ -433,7 +445,23 @@ function renderTabContent() {
             </div>
         `;
     } else if (currentTab === "market") {
-        renderMarketTab(container);
+        // Cek syarat skill Berdagang minimal Level 2 untuk membuka pasar
+        const tradeSkillLvl = gameState.skills.berdagang ? gameState.skills.berdagang.level : 0;
+        if (tradeSkillLvl < 2) {
+            container.innerHTML = `
+                <div class="text-center py-12 space-y-3 bg-galuhBg p-6 rounded-xl border border-galuhBorder">
+                    <i class="fa-solid fa-lock text-4xl text-amber-500"></i>
+                    <h3 class="font-bold text-gray-200 text-base">Pasar Dikunci (Skill Berdagang Belum Cukup)</h3>
+                    <p class="text-xs text-gray-400 max-w-sm mx-auto">
+                        Anda memerlukan minimal <span class="text-galuhGold font-bold">Skill Berdagang & Negosiasi Level 2</span> untuk diizinkan melakukan transaksi di pasar antar-wilayah. 
+                        Level skill berdagang Anda saat ini: <span class="text-red-400 font-bold">Lv.${tradeSkillLvl}</span>.
+                    </p>
+                    <p class="text-[11px] text-gray-500 italic">Selesaikan pekerjaan terkait atau pelajari kitab di Perpustakaan Agung untuk menaikkan skill Anda.</p>
+                </div>
+            `;
+        } else {
+            renderMarketTab(container);
+        }
     } else if (currentTab === "inn") {
         const regData = REGIONS[gameState.player.location];
         container.innerHTML = `
@@ -468,13 +496,13 @@ function renderTabContent() {
 
                     <div class="bg-galuhBg p-4 rounded-xl border border-galuhBorder space-y-3 flex flex-col justify-between">
                         <div>
-                            <h4 class="font-bold text-sm text-amber-400 border-b border-galuhBorder pb-1"><i class="fa-solid fa-house-user"></i> Tidur di Teras Orang (Gratis)</h4>
+                            <h4 class="font-bold text-sm text-amber-400 border-b border-galuhBorder pb-1"><i class="fa-solid fa-house-user"></i> Tidur di Teras Warga (20 KG)</h4>
                             <p class="text-xs text-gray-400 mt-2">
-                                Tidur tanpa biaya di teras warga. Berisiko diusir pemilik rumah jika tidur pada siang hari (06:00 - 18:00) setiap 2 jam!
+                                Tidur selama 3 jam (+15 Stamina, Biaya 20 KG). Tidak bisa digunakan pada pukul 05:00 - 20:00!
                             </p>
                         </div>
                         <button onclick="sleepOnPorch()" class="w-full bg-gray-800 hover:bg-gray-700 border border-gray-600 text-gray-300 py-2 rounded-lg text-xs font-bold transition">
-                            Coba Tidur di Teras Warga
+                            Coba Tidur di Teras Warga (20 KG)
                         </button>
                     </div>
                 </div>
@@ -644,9 +672,9 @@ function renderTabContent() {
                             <button onclick="studyBook('navigasiFisik', 1200, 2)" class="w-full bg-galuhAccent hover:bg-galuhAccentHover text-white py-1.5 rounded font-bold">Belajar 2 Jam (2,400 KG)</button>
                         </div>
                         <div class="bg-galuhBg p-3 rounded-lg border border-galuhBorder space-y-2">
-                            <div class="font-bold text-gray-200">Kitab Menengah (Level 4-5)</div>
-                            <div class="text-gray-400">Biaya: 4,500 KG / jam</div>
-                            <button onclick="studyBook('literasiAdministrasi', 4500, 2)" class="w-full bg-galuhAccent hover:bg-galuhAccentHover text-white py-1.5 rounded font-bold">Belajar 2 Jam (9,000 KG)</button>
+                            <div class="font-bold text-gray-200">Kitab Berdagang & Negosiasi</div>
+                            <div class="text-gray-400">Biaya: 1,500 KG / jam</div>
+                            <button onclick="studyBook('berdagang', 1500, 2)" class="w-full bg-galuhAccent hover:bg-galuhAccentHover text-white py-1.5 rounded font-bold">Belajar Berdagang (3,000 KG)</button>
                         </div>
                     </div>
                 </div>
@@ -666,7 +694,7 @@ function closeModal() {
     document.getElementById("game-modal").classList.add("hidden");
 }
 
-/* FUNGSI PERLENGKAPAN (PEMBELIAN TAS KUMULATIF & CART TUNGGAL) */
+/* FUNGSI PERLENGKAPAN (TAS & CART) */
 function buyEquipment(eqId) {
     const eq = EQUIPMENT[eqId];
     if (!eq) return;
@@ -703,7 +731,6 @@ function buyEquipment(eqId) {
         gameState.player.kg -= eq.price;
         animateCoinChange(-eq.price);
 
-        // Cart eksklusif (mengganti cart aktif)
         gameState.player.equippedCart = eqId;
         addLog(`Mengganti Cart kargo aktif menjadi <span class="text-gray-200 font-bold">${eq.name}</span> (+${eq.cap} kg).`);
     }
@@ -712,7 +739,7 @@ function buyEquipment(eqId) {
     renderTabContent();
 }
 
-/* FUNGSI TRAVEL / PERPINDAHAN LOKASI */
+/* FUNGSI TRAVEL */
 function travelTo(destRegion) {
     if (gameState.player.stamina < 15) {
         showAlertModal("Stamina Rendah", "Anda terlalu lelah untuk melakukan perjalanan (Butuh min 15 stamina)!");
@@ -778,29 +805,31 @@ function restAtInn(withMeal) {
     renderTabContent();
 }
 
+/* FUNGSI TIDUR DI TERAS WARGA (DIPERBARUI) */
 function sleepOnPorch() {
-    // Validasi waktu larangan (Pukul 05:00 sampai 20:00)
+    // Tidak bisa digunakan jika jam menunjukkan pukul 05:00 s.d. 20:00
     if (gameState.time.hour >= 5 && gameState.time.hour < 20) {
-        showAlertModal("Diusir Pemilik Rumah!", "Hari masih terang (pukul 05:00 - 20:00)! Pemilik rumah mendapati Anda dan mengusir Anda dari teras!");
-        advanceTime(60); // Waktu terbuang 1 jam karena diusir
+        showAlertModal("Diusir Pemilik Rumah!", "Hari masih siang/sore (pukul 05:00 - 20:00)! Pemilik rumah mendapati Anda dan mengusir Anda!");
+        advanceTime(60); 
         return;
     }
 
-    // Cek biaya tidur di teras (20 KG)
-    const cost = 20;
+    const cost = 20; // Biaya tidur 20 KG
     if (gameState.player.kg < cost) {
-        showAlertModal("Tidak Cukup Koin", "Anda tidak memiliki cukup Koin Galuh (butuh 20 KG) untuk membayar sedikit kompensasi tidur di teras warga!");
+        showAlertModal("Tidak Cukup Koin", "Anda butuh 20 KG untuk membayar kompensasi tidur di teras warga!");
         return;
     }
 
-    // Potong koin, tambah stamina, dan majukan waktu
     gameState.player.kg -= cost;
     animateCoinChange(-cost);
 
-    updateStaminaBar(gameState.player.stamina + 15);
+    updateStaminaBar(gameState.player.stamina + 15); // Tambah 15 stamina
     advanceTime(180); // Tidur selama 3 jam (180 menit)
 
-    addLog(`Tidur di teras warga selama 3 jam (-${cost} KG, +15 Stamina).`);
+    // Menambah sedikit XP skill berdagang/bertahan
+    addSkillExp("berdagang", 2);
+
+    addLog(`Tidur di teras warga selama 3 jam (-20 KG, +15 Stamina).`);
     autoSave();
     renderTabContent();
 }
@@ -855,7 +884,7 @@ function studyBook(skillKey, hourlyCost, durationHours) {
     addSkillExp(skillKey, totalExp);
     advanceTime(durationHours * 60);
 
-    addLog(`Membaca Kitab Ilmu <span class="text-gray-200 font-bold">${SKILL_NAMES[skillKey]}</span> (-${totalCost} KG, +${totalExp} XP).`);
+    addLog(`Membaca Kitab Ilmu <span class="text-gray-200 font-bold">${SKILL_NAMES[skillKey] || skillKey}</span> (-${totalCost} KG, +${totalExp} XP).`);
     autoSave();
     renderTabContent();
 }
@@ -884,9 +913,11 @@ function loadSaveData() {
             const loaded = JSON.parse(savedStr);
             if (loaded && loaded.version) {
                 gameState = Object.assign({}, gameState, loaded);
-                // Backward compatibility for equippedBackpack string to array
                 if (gameState.player.equippedBackpack && !Array.isArray(gameState.player.equippedBackpack)) {
                     gameState.player.equippedBackpack = [gameState.player.equippedBackpack];
+                }
+                if (!gameState.skills.berdagang) {
+                    gameState.skills.berdagang = { level: 0, exp: 0 };
                 }
             }
         }
