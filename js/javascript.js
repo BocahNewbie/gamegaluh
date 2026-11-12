@@ -1,9 +1,9 @@
 /* ==========================================================================
-   GAME ENGINE MAIN CONTROLLER
+   GAME ENGINE MAIN CONTROLLER - LIVIN IN GALUH (UPDATED)
    ========================================================================== */
 
 let gameState = {
-    version: "1.0.0",
+    version: "1.1.0",
     lastSaved: Date.now(),
     player: {
         name: "Kang Aa",
@@ -12,8 +12,8 @@ let gameState = {
         maxStamina: 100,
         location: "Che A Miss",
         totalWorkHours: 0,
-        equippedBackpack: null,
-        equippedCart: null
+        equippedBackpack: [], // Diubah menjadi Array agar mendukung tas kumulatif / berbarengan
+        equippedCart: null     // Cart eksklusif (hanya boleh satu)
     },
     time: {
         day: 1,
@@ -36,6 +36,7 @@ let gameState = {
         pocket: [],
         cart: []
     },
+    regionStocks: {}, // Stok riil per wilayah
     properties: {
         houses: {},
         rentedWarehouses: {}
@@ -47,12 +48,28 @@ let gameState = {
 let currentTab = "profile";
 let gameTimer = null;
 
-/* UTILITIES */
+/* UTILITIES & ATURAN KAPASITAS (TAS KUMULATIF & CART TUNGGAL) */
 function getPocketCapacity() {
-    let base = 5.0;
-    if (gameState.player.equippedBackpack && EQUIPMENT[gameState.player.equippedBackpack]) {
-        base += EQUIPMENT[gameState.player.equippedBackpack].cap;
+    let base = 5.0; // Kapasitas dasar saku
+
+    // Aturan Tas Punggung: Bisa kumulatif / berbarengan
+    if (gameState.player.equippedBackpack) {
+        let activeBps = Array.isArray(gameState.player.equippedBackpack) 
+            ? gameState.player.equippedBackpack 
+            : [gameState.player.equippedBackpack];
+        
+        activeBps.forEach(bpId => {
+            if (EQUIPMENT[bpId]) {
+                base += EQUIPMENT[bpId].cap;
+            }
+        });
     }
+
+    // Aturan Cart Logistik: Bersifat eksklusif (memilih salah satu, tidak bisa double)
+    if (gameState.player.equippedCart && EQUIPMENT[gameState.player.equippedCart]) {
+        base += EQUIPMENT[gameState.player.equippedCart].cap;
+    }
+
     return base;
 }
 
@@ -84,15 +101,44 @@ function renderLogs() {
     container.innerHTML = gameState.logs.map(log => `<div class="text-gray-300 border-b border-galuhBorder/40 pb-1">${log}</div>`).join("");
 }
 
+/* SISTEM STOK WILAYAH (STOK SEENAKNYA / DINAMIS) */
+function getRegionStock(regionName, itemId) {
+    if (!gameState.regionStocks) gameState.regionStocks = {};
+    if (!gameState.regionStocks[regionName]) {
+        gameState.regionStocks[regionName] = {};
+        if (typeof ITEMS !== 'undefined') {
+            Object.keys(ITEMS).forEach(id => {
+                gameState.regionStocks[regionName][id] = Math.floor(Math.random() * 50) + 15;
+            });
+        }
+    }
+    if (gameState.regionStocks[regionName][itemId] === undefined) {
+        gameState.regionStocks[regionName][itemId] = 25;
+    }
+    return gameState.regionStocks[regionName][itemId];
+}
+
+function decreaseRegionStock(regionName, itemId, amount) {
+    if (!gameState.regionStocks) gameState.regionStocks = {};
+    if (!gameState.regionStocks[regionName]) getRegionStock(regionName, itemId);
+    gameState.regionStocks[regionName][itemId] = Math.max(0, (gameState.regionStocks[regionName][itemId] || 0) - amount);
+}
+
+function increaseRegionStock(regionName, itemId, amount) {
+    if (!gameState.regionStocks) gameState.regionStocks = {};
+    if (!gameState.regionStocks[regionName]) getRegionStock(regionName, itemId);
+    gameState.regionStocks[regionName][itemId] = (gameState.regionStocks[regionName][itemId] || 0) + amount;
+}
+
 /* ==========================================================================
-   DINAMIS NEWS GENERATOR (DISESUAIKAN DENGAN LOKASI & CUACA HARI INI)
+   DINAMIS NEWS GENERATOR
    ========================================================================== */
 
 function generateNews() {
     const region = gameState.player.location;
     const currentRegionData = REGIONS[region];
     const neighbors = currentRegionData ? currentRegionData.neighbors : [];
-    const currentWeather = gameState.time.weather; // Misal: "Cerah" atau "Hujan"
+    const currentWeather = gameState.time.weather;
 
     const relevantNews = NEWS_POOL.filter(n => {
         const isLocallyRelevant = n.isGlobal || n.reg === region || neighbors.includes(n.reg);
@@ -102,7 +148,6 @@ function generateNews() {
 
     const shuffled = [...relevantNews].sort(() => 0.5 - Math.random());
     gameState.news = shuffled.slice(0, 5);
-
     renderNews();
 }
 
@@ -278,7 +323,10 @@ function renderTabContent() {
             `;
         }).join("");
 
-        const equippedBp = gameState.player.equippedBackpack && EQUIPMENT[gameState.player.equippedBackpack] ? EQUIPMENT[gameState.player.equippedBackpack].name : "Tidak Ada";
+        // Menampilkan daftar tas yang sedang dipakai (kumulatif)
+        let activeBps = Array.isArray(gameState.player.equippedBackpack) ? gameState.player.equippedBackpack : (gameState.player.equippedBackpack ? [gameState.player.equippedBackpack] : []);
+        let equippedBpNames = activeBps.length > 0 ? activeBps.map(id => EQUIPMENT[id] ? EQUIPMENT[id].name : id).join(", ") : "Tidak Ada";
+        
         const equippedCt = gameState.player.equippedCart && EQUIPMENT[gameState.player.equippedCart] ? EQUIPMENT[gameState.player.equippedCart].name : "Tidak Ada";
 
         container.innerHTML = `
@@ -307,11 +355,11 @@ function renderTabContent() {
 
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
                     <div class="bg-galuhBg p-2.5 rounded-lg border border-galuhBorder flex justify-between items-center">
-                        <span class="text-gray-400">Tas Punggung:</span>
-                        <span class="font-bold text-gray-200">${equippedBp}</span>
+                        <span class="text-gray-400">Tas Punggung (Kumulatif):</span>
+                        <span class="font-bold text-gray-200">${equippedBpNames}</span>
                     </div>
                     <div class="bg-galuhBg p-2.5 rounded-lg border border-galuhBorder flex justify-between items-center">
-                        <span class="text-gray-400">Cart Logistik:</span>
+                        <span class="text-gray-400">Cart Logistik (Eksklusif):</span>
                         <span class="font-bold text-gray-200">${equippedCt}</span>
                     </div>
                 </div>
@@ -466,13 +514,21 @@ function renderTabContent() {
             `;
         }).join("");
 
+        let activeBps = Array.isArray(gameState.player.equippedBackpack) ? gameState.player.equippedBackpack : (gameState.player.equippedBackpack ? [gameState.player.equippedBackpack] : []);
+
         let eqHtml = Object.keys(EQUIPMENT).map(eqId => {
             const eq = EQUIPMENT[eqId];
-            const isEq = gameState.player.equippedBackpack === eqId || gameState.player.equippedCart === eqId;
+            let isEq = false;
+            if (eq.type === "backpack") {
+                isEq = activeBps.includes(eqId);
+            } else if (eq.type === "cart") {
+                isEq = (gameState.player.equippedCart === eqId);
+            }
+
             return `
                 <div class="bg-galuhBg p-3 rounded-lg border border-galuhBorder flex justify-between items-center text-xs">
                     <div>
-                        <div class="font-bold text-gray-200">${eq.name}</div>
+                        <div class="font-bold text-gray-200">${eq.name} <span class="text-[10px] text-galuhGold uppercase">(${eq.type})</span></div>
                         <div class="text-gray-400 text-[10px]">Kapasitas: +${eq.cap} kg</div>
                     </div>
                     <div>
@@ -486,6 +542,7 @@ function renderTabContent() {
             <div class="space-y-4">
                 <div class="border-b border-galuhBorder pb-2">
                     <h3 class="font-bold text-sm text-gray-200"><i class="fa-solid fa-box-open text-galuhGold mr-1"></i> Management Inventori & Peralatan</h3>
+                    <p class="text-xs text-gray-400">Tas bisa dipakai berbarengan (kumulatif), namun Cart hanya bisa memilih salah satu.</p>
                 </div>
                 <div class="space-y-2">
                     <h4 class="font-bold text-xs text-gray-300 uppercase tracking-wider">Isi Saku Personal</h4>
@@ -609,16 +666,62 @@ function closeModal() {
     document.getElementById("game-modal").classList.add("hidden");
 }
 
+/* FUNGSI PERLENGKAPAN (PEMBELIAN TAS KUMULATIF & CART TUNGGAL) */
+function buyEquipment(eqId) {
+    const eq = EQUIPMENT[eqId];
+    if (!eq) return;
+
+    if (gameState.player.kg < eq.price) {
+        showAlertModal("Koin Tidak Cukup", "Koin Galuh Anda tidak cukup untuk membeli perlengkapan ini!");
+        return;
+    }
+
+    if (eq.type === "backpack") {
+        if (!gameState.player.equippedBackpack) {
+            gameState.player.equippedBackpack = [];
+        } else if (!Array.isArray(gameState.player.equippedBackpack)) {
+            gameState.player.equippedBackpack = [gameState.player.equippedBackpack];
+        }
+
+        if (gameState.player.equippedBackpack.includes(eqId)) {
+            showAlertModal("Informasi", "Anda sudah mengenakan tas punggung jenis ini.");
+            return;
+        }
+
+        gameState.player.kg -= eq.price;
+        animateCoinChange(-eq.price);
+        gameState.player.equippedBackpack.push(eqId);
+
+        addLog(`Mengenakan tambahan tas punggung <span class="text-gray-200 font-bold">${eq.name}</span> (+${eq.cap} kg).`);
+
+    } else if (eq.type === "cart") {
+        if (gameState.player.equippedCart === eqId) {
+            showAlertModal("Informasi", "Cart ini sudah sedang Anda gunakan.");
+            return;
+        }
+
+        gameState.player.kg -= eq.price;
+        animateCoinChange(-eq.price);
+
+        // Cart eksklusif (mengganti cart aktif)
+        gameState.player.equippedCart = eqId;
+        addLog(`Mengganti Cart kargo aktif menjadi <span class="text-gray-200 font-bold">${eq.name}</span> (+${eq.cap} kg).`);
+    }
+
+    autoSave();
+    renderTabContent();
+}
+
 /* FUNGSI TRAVEL / PERPINDAHAN LOKASI */
 function travelTo(destRegion) {
     if (gameState.player.stamina < 15) {
-        showAlertModal("Stamina Rendah", "Anda terlalu lelah untuk melakukan perjalanan (Butuh min 15 stamina)! Silakan istirahat terlebih dahulu.");
+        showAlertModal("Stamina Rendah", "Anda terlalu lelah untuk melakukan perjalanan (Butuh min 15 stamina)!");
         return;
     }
 
     updateStaminaBar(gameState.player.stamina - 15);
     gameState.player.location = destRegion;
-    advanceTime(180); // Memakan waktu 3 jam perjalanan
+    advanceTime(180);
 
     generateNews();
     addLog(`Berjalan menuju wilayah <span class="text-galuhGold font-bold">${destRegion}</span>.`);
@@ -632,7 +735,7 @@ function doWork(jobIdx) {
     if (!job) return;
 
     if (gameState.player.stamina < 35) {
-        showAlertModal("Stamina Rendah", "Stamina Anda tidak cukup untuk bekerja shift (Butuh min 35 stamina). Istirahatlah di penginapan terlebih dahulu!");
+        showAlertModal("Stamina Rendah", "Stamina Anda tidak cukup untuk bekerja shift (Butuh min 35 stamina).");
         return;
     }
 
@@ -670,14 +773,14 @@ function restAtInn(withMeal) {
     if (hoursTo6 === 0) hoursTo6 = 24;
     advanceTime(hoursTo6 * 60);
 
-    addLog(`Tidur di penginapan ${withMeal ? '+ makan' : ''} (-${cost} KG, Stamina pulih).`);
+    addLog(`Tidur di penginapan ${withMeal ? '+ makan' : ''} (-${cost} KG).`);
     autoSave();
     renderTabContent();
 }
 
 function sleepOnPorch() {
     if (gameState.time.hour >= 6 && gameState.time.hour < 18) {
-        showAlertModal("Diusir Pemilik Rumah!", "Hari sudah siang! Pemilik rumah mendapati Anda tidur di teras dan mengusir Anda!");
+        showAlertModal("Diusir Pemilik Rumah!", "Hari sudah siang! Pemilik rumah mengusir Anda!");
         advanceTime(120);
         return;
     }
@@ -697,27 +800,8 @@ function buyMeal(cost, staminaAdd) {
     gameState.player.kg -= cost;
     animateCoinChange(-cost);
     updateStaminaBar(gameState.player.stamina + staminaAdd * 10);
-    addLog(`Makan di kedai (-${cost} KG, +${staminaAdd * 10} Stamina).`);
+    addLog(`Makan di kedai (-${cost} KG).`);
     autoSave();
-}
-
-function buyEquipment(eqId) {
-    const eq = EQUIPMENT[eqId];
-    if (!eq) return;
-    if (gameState.player.kg < eq.price) {
-        showAlertModal("Koin Tidak Cukup", "Koin Galuh Anda tidak cukup!");
-        return;
-    }
-
-    gameState.player.kg -= eq.price;
-    animateCoinChange(-eq.price);
-
-    if (eq.type === "backpack") gameState.player.equippedBackpack = eqId;
-    else if (eq.type === "cart") gameState.player.equippedCart = eqId;
-
-    addLog(`Membeli perlengkapan <span class="text-gray-200 font-bold">${eq.name}</span>.`);
-    autoSave();
-    renderTabContent();
 }
 
 function buyHouse(regName, price) {
@@ -787,6 +871,10 @@ function loadSaveData() {
             const loaded = JSON.parse(savedStr);
             if (loaded && loaded.version) {
                 gameState = Object.assign({}, gameState, loaded);
+                // Backward compatibility for equippedBackpack string to array
+                if (gameState.player.equippedBackpack && !Array.isArray(gameState.player.equippedBackpack)) {
+                    gameState.player.equippedBackpack = [gameState.player.equippedBackpack];
+                }
             }
         }
     } catch (e) {
