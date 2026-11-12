@@ -112,13 +112,21 @@ renderNews();
 }
 
 function renderNews() {
-const container = document.getElementById("news-container");
-if (!container) return;
-if (gameState.news.length === 0) {
-container.innerHTML = <div class="text-gray-500 italic text-center py-2">Tidak ada berita lokal saat ini...</div>;
-return;
-}
-container.innerHTML = gameState.news.map(n => <div class="bg-galuhBg/80 p-2 rounded border border-galuhBorder/60"> <div class="flex items-center justify-between text-[10px] text-gray-400 mb-1"> <span class="font-bold ${n.isGlobal ? 'text-amber-400' : 'text-galuhGold'}">${n.reg}</span> <span>${n.isGlobal ? 'Warta Agung' : 'Lokal'}</span> </div> <p class="text-[11px] text-gray-300 leading-snug">${n.text}</p> </div>).join("");
+    const container = document.getElementById("news-container");
+    if (!container) return;
+    if (gameState.news.length === 0) {
+        container.innerHTML = `<div class="text-gray-500 italic text-center py-2">Tidak ada berita lokal saat ini...</div>`;
+        return;
+    }
+    container.innerHTML = gameState.news.map(n => `
+        <div class="bg-galuhBg/80 p-2 rounded border border-galuhBorder/60">
+            <div class="flex items-center justify-between text-[10px] text-gray-400 mb-1">
+                <span class="font-bold ${n.isGlobal ? 'text-amber-400' : 'text-galuhGold'}">${n.reg}</span>
+                <span>${n.isGlobal ? 'Warta Agung' : 'Lokal'}</span>
+            </div>
+            <p class="text-[11px] text-gray-300 leading-snug">${n.text}</p>
+        </div>
+    `).join("");
 }
 
 function getReqExp(level) {
